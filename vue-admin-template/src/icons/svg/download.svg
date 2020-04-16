@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>编组</title>
+    <desc>Created with Sketch.</desc>
+    <g id="注册登陆、客户账户2.24" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="进入账户" transform="translate(-10.000000, -334.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="编组" transform="translate(10.000000, 334.000000)">
+                <polygon id="路径" points="10.0011046 12.7325017 3.56199943 6 2 7.63548164 10.0011046 16 10.7821044 15.1834142 18 7.63548164 16.4380005 6.00115498 13.4277824 9.14968815 10.2905275 12.4298914 10 12.7336567"></polygon>
+                <path d="M11.1111111,13.3333333 L8.88888888,13.3333333 L8.88888888,0 L11.1111111,0 L11.1111111,13.3333333 Z M20,20 L0,20 L0,17.7777778 L20,17.7777778 L20,20 Z" id="形状"></path>
+            </g>
+        </g>
+    </g>
+</svg>
