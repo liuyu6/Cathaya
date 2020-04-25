@@ -182,6 +182,13 @@ export const constantRoutes = [
         meta: { title: 'New Enquiry' }
       },
       {
+        path: 'preliminary-quotation',
+        name: 'preliminary-quotation',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/preliminary-quotation'),
+        meta: { title: 'Preliminary Quotation' }
+      },
+      {
         path: 'working-quotes',
         name: 'working-quotes',
         component: () => import('@/views/quick-quote/working-quotes/index'),
