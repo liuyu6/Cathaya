@@ -178,8 +178,26 @@ export const constantRoutes = [
       {
         path: 'new-enquiry',
         name: 'new-enquiry',
-        component: () => import('@/views/quick-quote/new-enquiry/index'),
+        component: () => import('@/views/quick-quote/new-enquiry/create-quote'),
         meta: { title: 'New Enquiry' }
+      },
+      {
+        path: 'set-quote-background',
+        name: 'set-quote-background',
+        component: () => import('@/views/quick-quote/new-enquiry/set-quote-background'),
+        meta: { title: 'Set Project Background' }
+      },
+      {
+        path: 'set-project-market',
+        name: 'set-project-market',
+        component: () => import('@/views/quick-quote/new-enquiry/set-project-market'),
+        meta: { title: 'Set Project Market' }
+      },
+      {
+        path: 'set-project-methodology',
+        name: 'set-project-methodology',
+        component: () => import('@/views/quick-quote/new-enquiry/set-project-methodology'),
+        meta: { title: 'Set Project Methodology' }
       },
       {
         path: 'preliminary-quotation',
@@ -469,7 +487,8 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+   //mode: 'history', // require service support
+  // mode:'hash',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

@@ -47,27 +47,27 @@
         </el-table-column>
 
 
-        <el-table-column
-          prop="start_date"
-          label="Action"
-          style="text-align: center;"
-        >
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="linkProjectDetil(scope.$index, scope.row)"
-              type="text">
-              <i class="el-icon-edit" style="font-size: 22px;"></i>
-            </el-button>
+<!--        <el-table-column-->
+<!--          prop="start_date"-->
+<!--          label="Action"-->
+<!--          style="text-align: center;"-->
+<!--        >-->
+<!--          <template slot-scope="scope">-->
+<!--            <el-button-->
+<!--              @click.native.prevent="linkProjectDetil(scope.$index, scope.row)"-->
+<!--              type="text">-->
+<!--              <i class="el-icon-edit" style="font-size: 22px;"></i>-->
+<!--            </el-button>-->
 
-            <el-button
-              @click.native.prevent="closeProject(scope.$index, scope.row)"
-              type="text">
-              <i class="el-icon-switch-button" style="font-size: 22px;color: red;"></i>
-            </el-button>
+<!--            <el-button-->
+<!--              @click.native.prevent="closeProject(scope.$index, scope.row)"-->
+<!--              type="text">-->
+<!--              <i class="el-icon-switch-button" style="font-size: 22px;color: red;"></i>-->
+<!--            </el-button>-->
 
 
-          </template>
-        </el-table-column>
+<!--          </template>-->
+<!--        </el-table-column>-->
 
         <el-table-column
           prop="start_date"

@@ -1,13 +1,12 @@
 <template>
   <div>
     <breadcrumb class="breadcrumb-container" />
+    <Remindtext  ></Remindtext>
     <div class="content">
       <div style="margin-bottom: 20px;">
         <el-input v-model="tableDataName" placeholder="Project Name" style="width:240px"></el-input>
         <el-button type="primary" @click="doFilter">Search</el-button>
       </div>
-
-
 
       <el-table
         :data="tableDataEnd"
@@ -65,12 +64,8 @@
               <i class="el-icon-switch-button" style="font-size: 22px;color: red;"></i>
             </el-button>
 
-
           </template>
         </el-table-column>
-
-
-
 
       </el-table>
       <el-pagination
@@ -90,6 +85,7 @@
 </template>
 <script>
   import Breadcrumb from '@/components/Breadcrumb'
+  import Remindtext from '@/components/Remindtext'
   export default {
     data() {
       return {
@@ -162,7 +158,8 @@
       };
     },
     components: {
-      Breadcrumb
+      Breadcrumb,
+      Remindtext
     },
     created() {
       this.totalItems = this.tableDataBegin.length;
