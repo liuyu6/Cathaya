@@ -10,7 +10,7 @@
                     please select. )</span>
       </div>
       <div class="fc-inline-left fc-content-marketInput">
-        <el-checkbox-group v-model="areaForm.confirmArea" size="small" @change='handleClick'>
+        <el-checkbox-group v-model="areaForm.confirmArea" size="small">
           <div class="apac-box areaForm-item">
             <div class="fc-inline-left-title">APAC</div>
             <div class="apac-check">
@@ -70,7 +70,7 @@
       </div>
     </div>
     <div class="saveBtn">
-      <el-button type="primary" style="width: 200px;">Save</el-button>
+      <el-button type="primary" style="width: 200px;" @click="saveProjectMarket">Save</el-button>
     </div>
 
   </div>
@@ -81,6 +81,7 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import Step from '@/components/Step'
+  import { addCountry } from '@/api/quota'
 
 
   export default {
@@ -93,6 +94,18 @@
         },
       }
     },
+    created(){
+      // cookie中没有项目编号进行跳转
+      var projectNumber = this.$cookie.getCookie('project_number');
+      if (projectNumber == null){
+        this.$router.push({
+          name: 'new-enquiry',  // 路由的名称
+          query: {
+          }
+        });
+        return false;
+      }
+    },
     components: {
       Breadcrumb,
       Remindtext,
@@ -103,23 +116,52 @@
         index:'1',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:4,
-        stepTitles:['Set Project Background','Set Market','Set Methodology','Additional Services Required'],
+        stepCount:3,
+        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
       })
     },
     methods:{
+
       handleothersArea(value){
         var arr = value.split(',');
         var arr2 = this.areaForm.confirmArea;
       },
-      handleClick(val) {
-        var val2 = '';
-        var str = this.areaForm.othersArea;
-        var arr = str.split(',');
-        val2 = val.concat(arr);
-        console.log(val2);
-        console.log(this.activeName);
-      },
+      saveProjectMarket(){
+        var marketArr = Array.from(this.areaForm.confirmArea);
+
+        if(this.areaForm.othersArea !=''){
+          var otherAreaArr = this.areaForm.othersArea.split(',');
+          for (var i=0;i<otherAreaArr.length;i++){
+            marketArr.push(otherAreaArr[i]);
+          }
+        }
+        if(marketArr.length<1){
+          this.$alert('Please select the project market.', '', {
+            confirmButtonText: 'confirm',
+          });
+        }else{
+          var number = this.$getUrl.getUrlKey('number');
+          console.log(marketArr);
+          var marketArr2 = marketArr.join(',')
+          addCountry(number,marketArr2).then(response => {
+            if (response.code == '1'){
+                // console.log(response);
+
+              this.$router.push({
+                name: 'set-qualitative-methodology',  // 路由的名称
+                query: {
+                  'number':number
+                }
+              })
+
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+        }
+
+        // console.log(this.areaForm.confirmArea);
+      }
     }
   }
 </script>

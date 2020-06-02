@@ -24,7 +24,7 @@
                     <div>
                       <div class="item-info-title">Methodology</div>
                       <div class="item-info-box">
-                        <el-select v-model="domain.methodology" :key="domain.index" placeholder="请选择" @change="changeMethodology">
+                        <el-select v-model="domain.methodology" :key="domain.index" placeholder="请选择" @change="changeMethodology(domain)">
                           <el-option label="IDI" value="IDI"></el-option>
                           <el-option label="TDI" value="TDI"></el-option>
                           <el-option label="Dyad" value="Dyad"></el-option>
@@ -40,7 +40,9 @@
                                   after you complete this specs sheet. )</span>
                     </div>
                   </div>
+                   <hr style="background-color:#D8D8D8; height:1px; border:none;margin-top: 35px;display: none;" class="hr">
                   <div class="scope-item-info scope-service">
+                    <div class="project-scope-service-title">Service Items / Deliverables:</div>
                     <div class="item-info-box cost-content">
                       <div>
                         <el-checkbox v-model="domain.fieldworkCost" :key="domain.index" @change="changeFieldword(domain)" ></el-checkbox>
@@ -188,6 +190,61 @@
                         <div :key="domain.index" @click="addCostContent(domain)" v-show="domain.fieldworkCost"><i class="el-icon-circle-plus"></i> Add Anogher Type of Respondents</div>
                       </div>
                     </div>
+                    <div class="item-info-box additional-Services">
+                      <span class="fieldwork-title" >Additional Services Required:</span>
+                      <el-checkbox-group v-model="domain.additionalServices" :key="domain.index" @change="changeAdditionalServices(domain)"  style="margin-top: 10px;">
+                        <div style="margin-bottom: 10px;">
+                          <el-checkbox  label="Moderation" border></el-checkbox>
+                          <el-checkbox  label="Facility rental" border></el-checkbox>
+                          <el-checkbox  label="Audio recording" border></el-checkbox>
+                          <el-checkbox  label="Video recording" border></el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                          <el-checkbox  label="Design of screener" border></el-checkbox>
+                          <el-checkbox  label="Translation" border>
+                            Translation of study materials (estimated word count <input type="number" v-model="domain.additionalServicesTranslation" :key="domain.index" @change="changeAdditionalTranslationInput(domain)"> )
+                          </el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                          <el-checkbox  label="Design of interview guide" border></el-checkbox>
+                          <el-checkbox  label="Transcript in local language" border></el-checkbox>
+                          <el-checkbox  label="Transcript in English" border></el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                          <el-checkbox  label="Simultaneous translation" border></el-checkbox>
+                          <el-checkbox  label="Topline report" border></el-checkbox>
+                          <el-checkbox  label="Full report" border></el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                          <el-checkbox  label="Other" border>Other services, specify <input type="text" v-model="domain.additionalServicesOther" :key="domain.index" @change="changeAdditionalOtherInput(domain)"></el-checkbox>
+                        </div>
+
+                      </el-checkbox-group>
+                    </div>
+                    <div class="item-info-box">
+                      <div class="fc-title-left">Project setup and management fee :</div>
+                      <div class="fc-inline-left">
+                        <el-input
+                          type="text"
+                          placeholder=""
+                          :key="domain.index"
+                          v-model="domain.managementFee">
+                        </el-input>
+                      </div>
+                    </div>
+                    <div class="item-info-box">
+                      <div class="fc-title-left">Special Requirements / Notes (if any) :</div>
+                      <div class="fc-inline-left">
+                        <el-input
+                          type="textarea"
+                          :rows="4"
+                          placeholder=""
+                          :key="domain.index"
+                          style="width: 400px;"
+                          v-model="domain.requirementsNotes">
+                        </el-input>
+                      </div>
+                    </div>
 
 
                   </div>
@@ -196,7 +253,7 @@
             </div>
             <el-row>
               <div class="add-methodology" @click="addMethodology"><i class="el-icon-circle-plus"></i> Add Another Methodology</div>
-              <el-button class="save-btn" type="primary" >Save</el-button>
+              <el-button class="save-btn" type="primary" @click="submit">Save</el-button>
               <div class="save-btn-remind" v-show="btn_remind">
                       <span class="fc-form-item-title-span2">( Please provide more details on your project requirements & scope,
                         our bidding team will get back to you shortly. )</span>
@@ -243,6 +300,12 @@
                 group_targetType: '',
 
               }],
+              additionalServices:[],
+              additionalServicesTranslation:'',
+              additionalServicesOther:'',
+              managementFee:'',
+              requirementsNotes:'',
+
             }],
         areaScope: [
           {
@@ -269,14 +332,46 @@
       Remindtext,
       Step
     },
+    created(){
+      // cookie中没有项目编号进行跳转
+      var projectNumber = this.$cookie.getCookie('project_number');
+      if (projectNumber == null){
+        this.$router.push({
+          name: 'new-enquiry',  // 路由的名称
+          query: {
+          }
+        });
+        return false;
+      }
+
+      // 获取项目类型然后跳转到对应页面
+      var projectMeth = this.$cookie.getCookie('project_methodologyType');
+      if (projectMeth == '1'){
+        this.$router.push({
+          name: 'set-qualitative-methodology',  // 路由的名称
+          query: {
+          }
+        });
+        return false;
+      }
+      if (projectMeth == '2'){
+        this.$router.push({
+          name: 'set-quantitative-methodology',  // 路由的名称
+          query: {
+          }
+        });
+        return false;
+      }
+    },
     mounted(){
       $('#step').step({
         index:'2',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:4,
-        stepTitles:['Set Project Background','Set Market','Set Methodology','Additional Services Required'],
-      })
+        stepCount:3,
+        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
+      });
+      this.activeName='China（mainland）';
     },
     methods:{
       removeTab(targetName) {
@@ -296,63 +391,10 @@
         this.areaForm.confirmArea = activeName;
         this.editableTabs = tabs.filter(tab => tab.name !== targetName);
       },
-
       changeHandler(value) {
         console.log('改变之后的值是:' + value)
       },
 
-      handleClick(val) {
-        $('.el-tabs__nav-prev').css('line-height','70px');
-        $('.el-tabs__nav-next').css('line-height','70px');
-        var val2 = '';
-        var str = this.areaForm.othersArea;
-        var arr = str.split(',');
-        console.log(arr);
-
-
-        val2 = val.concat(arr);
-        console.log(val2);
-
-        if(str == '' && val.length < 1){
-          val2 = '';
-        }
-        if(str == ''){
-          val2 = val;
-        }
-        // if(val.length < 1){
-        //   var val2 = arr;
-        // }
-
-
-        console.log(val2);
-
-        if (val2 == ''){
-          $('.el-tabs__nav-scroll').css('display','none');
-          $('.fc-content-scope').css('display','none');
-        }else{
-          $('.el-tabs__nav-scroll').css('display','block');
-          $('.fc-content-scope').css('display','block');
-        }
-        this.areaScope=[];
-        for(var i=0; i<val2.length; i++){
-          this.areaScope.push({
-            title: val2[i],
-            name: val2[i],
-            content: ''
-          });
-          this.activeName=val2[0];
-
-        };
-        console.log(this.activeName);
-
-
-
-        // let newTabName = ++this.tabIndex + '';
-
-        // this.areaScope = newTabName;
-
-
-      },
       handleCheck(tab,event) {
         var presentRes = this.activeName;
         // console.log(presentRes);
@@ -364,8 +406,8 @@
         if (this.areaScope.length == '1'){
           return  false;
         }
-        if(!this.isTip){
-          this.isTip = true;
+        if(!this.activeName){
+          this.activeName = true;
           return true;
         }
 
@@ -386,12 +428,21 @@
           throw new Error("取消成功！");
         });
       },
-      changeMethodology(val) {
+      changeMethodology(item) {
+        var index = this.scopeList.indexOf(item);
+        this.scopeList[index].fieldworkCostArr.length=0;
+        this.scopeList[index].fieldworkCost=false;
+
+        var val =item.methodology;
+        // console.log(val);
+        var itemDiv =  $('.scope-content')[index];
 
         if(val == 'Desk Research' || val == 'Other'){
-          $('.scope-service').css('display','none');
+          $(itemDiv).find('.scope-service').css('display','none');
+          $(itemDiv).find('.hr').css('display','none');
         }else{
-          $('.scope-service').css('display','block');
+          $(itemDiv).find('.scope-service').css('display','block');
+          $(itemDiv).find('.hr').css('display','block');
         }
 
         for (var i = 0; i<this.scopeList.length;i++){
@@ -413,36 +464,116 @@
 
         var index = this.scopeList.indexOf(item);
         var checkVal = this.scopeList[index].fieldworkCost
+        var scopeBox = $('.scope-content')[index];
 
         if(checkVal){
+          $(scopeBox).find('.add-cost-content').css('display','block');
           this.scopeList[index].fieldworkCostArr.length=0;
           this.scopeList[index].fieldworkCostArr.push(
             {
-              typeRespondents:'',
-              specificRecruiting:'',
+              typeRespondents: '',
+              specificRecruiting: '',
+
+              one_IR: '',
+              one_lengthInterview: '',
+              one_sampleSize: '',
+              one_targetType: '',
+
+              group_IR: '',
+              group_lengthInterview: '',
+              group_numberRespondentsGroup: '',
+              group_numberGroupsTotal: '',
+              group_targetType: '',
             }
           );
         }else{
+          $(scopeBox).find('.add-cost-content').css('display','none');
           this.scopeList[index].fieldworkCostArr.length=0;
         }
 
       },
+      changeAdditionalServices(item){
 
+          var arr = item.additionalServices;
+          // var index = this.scopeList.indexOf(item);
+          // var scopeDiv = $('.scope-content')[index];
+          var key = $.inArray("Translation", arr );
+          var key2 = $.inArray("Other", arr );
+
+          if(key >= 0){
+              if(item.additionalServicesTranslation=='' ){
+
+                  this.$alert('Please fill in the input box.', '', {
+                    confirmButtonText: 'confirm',
+                  });
+
+                arr.splice($.inArray("Translation", arr),1);
+              }
+          }
+
+        if(key2 >= 0){
+          if(item.additionalServicesOther=='' ){
+            this.$alert('Please fill in the input box.', '', {
+              confirmButtonText: 'confirm',
+            });
+            arr.splice($.inArray("Other", arr),1);
+          }
+        }
+
+
+          console.log(item.additionalServices);
+
+      },
+      changeAdditionalTranslationInput(item){
+        var arr = item.additionalServices;
+        if (item.additionalServicesTranslation == ''){
+          arr.splice($.inArray("Translation", arr),1);
+        }
+      },
+      changeAdditionalOtherInput(item){
+        var arr = item.additionalServices;
+        if (item.additionalServicesOther == ''){
+          arr.splice($.inArray("Other", arr),1);
+        }
+      },
       changeTypeRespondents(item1,item2) {
         var index1 = this.scopeList.indexOf(item1);
         var index2 = this.scopeList[index1].fieldworkCostArr.indexOf(item2);
-        var val = this.scopeList[index1].fieldworkCostArr[index2].typeRespondents;
+        var res = this.scopeList[index1].fieldworkCostArr[index2].typeRespondents;
+        var mVal = this.scopeList[index1].methodology;
+
         console.log(index1);
         console.log(index2);
-        console.log(val);
+        console.log(mVal);
+        console.log(res);
 
+        var scopeItem = $('.scope-content')[index1];
+        var s1_item = $(scopeItem).find('.cost-box-s1')[index2];
+        var s2_item = $(scopeItem).find('.cost-box-s2')[index2];
+        // console.log(str);
 
-        if (val == 'B2C (consumers)' || val == 'B2B (business decision makers or professionals)'){
-          $('.cost-box-s1').css('display','block');
-          $('.cost-box-s2').css('display','none');
-        }else{
-          $('.cost-box-s1').css('display','none');
-          $('.cost-box-s2').css('display','block');
+        if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
+             $(s1_item).css('display','block');
+             $(s2_item).css('display','none');
+              if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+                $(s1_item).find('.oneIR').css('display','block');
+                $(s1_item).find('.oneTargetType').css('display','none');
+              }else{
+                $(s1_item).find('.oneIR').css('display','none');
+                $(s1_item).find('.oneTargetType').css('display','block');
+              }
+        }
+
+        if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
+            $(s1_item).css('display','none');
+            $(s2_item).css('display','block');
+          if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+            $(s2_item).find('.groupIR').css('display','block');
+            $(s2_item).find('.groupTargetType').css('display','none');
+          }else{
+            $(s2_item).find('.groupIR').css('display','none');
+            $(s2_item).find('.groupTargetType').css('display','block');
+          }
         }
 
       },
@@ -452,6 +583,17 @@
           {
             typeRespondents:'',
             specificRecruiting:'',
+
+            one_IR:'',
+            one_lengthInterview:'',
+            one_sampleSize:'',
+            one_targetType:'',
+
+            group_IR:'',
+            group_lengthInterview:'',
+            group_numberRespondentsGroup :'',
+            group_numberGroupsTotal :'',
+            group_targetType:'',
           }
         );
 
@@ -493,11 +635,19 @@
               group_targetType:'',
 
             }],
+            additionalServices:[],
+            additionalServicesTranslation:'',
+            additionalServicesOther:'',
+            managementFee:'',
+            requirementsNotes:'',
           }
         );
         // let arr = Array.from(this.scopeList);
-        console.log(this.scopeList);
+        //console.log(this.scopeList);
 
+      },
+      submit(){
+          console.log(this.scopeList);
       },
     }
   }
@@ -528,6 +678,7 @@
 
   .fc-content-scope{
     padding: 15px;
+    margin-top: 10px;
   }
 
   .mcontent{
@@ -618,7 +769,7 @@
     display: none;
   }
   .add-cost-content{
-    /*display: none;*/
+    display: none;
     margin-top:20px;
     margin-bottom: 20px;
     color: #409EFF;

@@ -16,7 +16,7 @@
             <el-input type="textarea" v-model="setBackgroundForm.project_background" rows="6"></el-input>
           </el-form-item>
           <div class="saveBtn">
-            <el-button type="primary" style="width: 200px;">Save</el-button>
+            <el-button type="primary" style="width: 200px;" @click="saveProjectBackground">Save</el-button>
           </div>
 
         </el-form>
@@ -31,6 +31,8 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import Step from '@/components/Step'
+  import { mapGetters } from 'vuex'
+  import { createEnquiry } from '@/api/quota'
 
 
   export default {
@@ -43,21 +45,74 @@
           }
       }
     },
+    created(){
+
+      // cookie中没有项目编号进行跳转
+      var projectNumber = this.$cookie.getCookie('project_number');
+      if (projectNumber == null){
+        this.$router.push({
+          name: 'new-enquiry',  // 路由的名称
+          query: {
+          }
+        });
+        return false;
+      }
+    },
+
     components: {
       Breadcrumb,
       Remindtext,
       Step
+    },
+    computed: {
+      ...mapGetters([
+        'user_id',
+        'name'
+      ])
     },
     mounted(){
       $('#step').step({
         index:'0',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:4,
-        stepTitles:['Set Project Background','Set Market','Set Methodology','Additional Services Required'],
+        stepCount:3,
+        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
       })
     },
     methods:{
+      saveProjectBackground(){
+        // 获取地址栏参数
+        var number = this.$getUrl.getUrlKey('number');
+        var project_name = this.setBackgroundForm.project_name;
+        var content = this.setBackgroundForm.project_background;
+        console.log(number);
+        console.log(project_name);
+        console.log(content);
+
+        if(project_name == ''){
+          this.$alert('Please fill in the project name.', '', {
+            confirmButtonText: 'confirm',
+          });
+          return false;
+        }else{
+          createEnquiry(number,content,project_name).then(response => {
+            if (response.code == '1'){
+
+              // 设置项目名称
+              this.$router.push({
+                name: 'set-project-market',  // 路由的名称
+                query: {
+                  'number':number
+                }
+              })
+
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+        }
+
+      }
 
     }
   }

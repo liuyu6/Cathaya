@@ -183,7 +183,7 @@
               location.href="/#/quick-quote/set-project-market"
               break;
             case 2:
-              location.href="/#/quick-quote/set-project-methodology"
+              location.href="/#/quick-quote/set-qualitative-methodology"
               break;
             case 3:
               location.href="http://13.230.166.63/laravel/public/admin/AddProjectd"
@@ -295,6 +295,7 @@
     padding:0;
     font-size:0;
     position: relative;
+    left: 80px;
   }
   .eis-vertical-steps .eis-form-steps{
     overflow: hidden;
@@ -407,7 +408,7 @@
     padding:6px 0 0 0;
     color:#666;
     /*text-align: center;*/
-    margin-left: -50px;
+    margin-left: -120px;
   }
   .eis-vertical-steps .eis-form-step .eis-step-main{
     overflow: hidden;

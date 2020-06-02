@@ -15,6 +15,14 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import getUrl from './static/js/urlGet'; //获取url参数
+Vue.prototype.$getUrl = getUrl; //注册全局方法
+
+import cookie from './static/js/cookie'; //设置cookie
+
+Vue.prototype.$cookie = cookie;
+
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

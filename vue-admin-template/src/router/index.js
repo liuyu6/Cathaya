@@ -184,25 +184,35 @@ export const constantRoutes = [
       {
         path: 'set-quote-background',
         name: 'set-quote-background',
+        hidden:true,
         component: () => import('@/views/quick-quote/new-enquiry/set-quote-background'),
         meta: { title: 'Set Project Background' }
       },
       {
         path: 'set-project-market',
         name: 'set-project-market',
+        hidden:true,
         component: () => import('@/views/quick-quote/new-enquiry/set-project-market'),
         meta: { title: 'Set Project Market' }
       },
       {
-        path: 'set-project-methodology',
-        name: 'set-project-methodology',
-        component: () => import('@/views/quick-quote/new-enquiry/set-project-methodology'),
-        meta: { title: 'Set Project Methodology' }
+        path: 'set-quantitative-methodology',
+        name: 'set-quantitative-methodology',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/set-quantitative-methodology'),
+        meta: { title: 'Set Quantitative Methodology' }
+      },
+      {
+        path: 'set-qualitative-methodology',
+        name: 'set-qualitative-methodology',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/set-qualitative-methodology'),
+        meta: { title: 'Set Qualitative Methodology' }
       },
       {
         path: 'preliminary-quotation',
         name: 'preliminary-quotation',
-        hidden:true,
+        // hidden:true,
         component: () => import('@/views/quick-quote/new-enquiry/preliminary-quotation'),
         meta: { title: 'Preliminary Quotation' }
       },
