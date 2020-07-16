@@ -186,7 +186,14 @@ export const constantRoutes = [
         name: 'set-quote-background',
         hidden:true,
         component: () => import('@/views/quick-quote/new-enquiry/set-quote-background'),
-        meta: { title: 'Set Project Background' }
+        meta: { title: 'Set Project Overview' }
+      },
+      {
+        path: 'set-methodology',
+        name: 'set-methodology',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/set-methodology'),
+        meta: { title: 'Set Methodology' }
       },
       {
         path: 'set-project-market',
@@ -196,23 +203,44 @@ export const constantRoutes = [
         meta: { title: 'Set Project Market' }
       },
       {
-        path: 'set-quantitative-methodology',
-        name: 'set-quantitative-methodology',
+        path: 'set-quantitative-fieldwork',
+        name: 'set-quantitative-fieldwork',
         hidden:true,
-        component: () => import('@/views/quick-quote/new-enquiry/set-quantitative-methodology'),
-        meta: { title: 'Set Quantitative Methodology' }
+        component: () => import('@/views/quick-quote/new-enquiry/set-quantitative-fieldwork'),
+        meta: { title: 'Set Quantitative Fieldwork' }
       },
       {
-        path: 'set-qualitative-methodology',
-        name: 'set-qualitative-methodology',
+        path: 'set-quantitative-additional',
+        name: 'set-quantitative-additional',
         hidden:true,
-        component: () => import('@/views/quick-quote/new-enquiry/set-qualitative-methodology'),
-        meta: { title: 'Set Qualitative Methodology' }
+        component: () => import('@/views/quick-quote/new-enquiry/set-quantitative-additional'),
+        meta: { title: 'Set Quantitative Additional Services' }
+      },
+      {
+        path: 'set-qualitative-additional',
+        name: 'set-qualitative-additional',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/set-qualitative-additional'),
+        meta: { title: 'Set Qualitative Additional Services' }
+      },
+      {
+        path: 'set-qualitative-fieldwork',
+        name: 'set-qualitative-fieldwork',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/set-qualitative-fieldwork'),
+        meta: { title: 'Set Qualitative Fieldwork' }
+      },
+      {
+        path: 'project-review',
+        name: 'project-review',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/review'),
+        meta: { title: 'Review' }
       },
       {
         path: 'preliminary-quotation',
         name: 'preliminary-quotation',
-        // hidden:true,
+        hidden:true,
         component: () => import('@/views/quick-quote/new-enquiry/preliminary-quotation'),
         meta: { title: 'Preliminary Quotation' }
       },

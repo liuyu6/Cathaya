@@ -5,149 +5,54 @@
     <step></step>
     <div class="mcontent">
       <div class="fc-item fc-content-scope">
-        <el-tabs v-model="activeName" @tab-click="handleCheck" :before-leave="beforeLeaveTab" @tab-remove="removeTab" class="areaScope">
+        <el-tabs type="border-card" v-model="activeName" @tab-click="handleCheck" :before-leave="beforeLeaveTab" @tab-remove="removeTab" class="areaScope">
           <el-tab-pane
             v-for="(item, index) in areaScope"
             :key="item.name"
             :label="item.title"
             :name="item.name"
           >
-          </el-tab-pane>
-        </el-tabs>
 
-        <el-form ref="" v-model="scopeList" >
+              <el-form ref="" v-model="scopeList" >
 
             <div class="scope-content"  v-for="(domain, index) in scopeList">
               <div  class="remove-scope-box"  v-show="index > 0 " :key="domain.index" @click="removeScopeContent(domain)"><i class="el-icon-remove"></i></div>
               <div class="scope-item project-scope">
-                  <div class="scope-item-info">
-                    <div>
-                      <div class="item-info-title">Methodology</div>
-                      <div class="item-info-box">
-                        <el-select v-model="domain.methodology" :key="domain.index" placeholder="请选择" @change="changeMethodology(domain)">
-                          <el-option label="Online Survey" value="Online Survey"></el-option>
-                          <el-option label="CAWI" value="CAWI"></el-option>
-                          <el-option label="CATI" value="CATI"></el-option>
-                          <el-option label="CLT" value="CLT"></el-option>
-                          <el-option label="CAPI" value="CAPI"></el-option>
-                          <el-option label="Intercept" value="Intercept"></el-option>
-                          <el-option label="Mystery Shopping" value="Mystery Shopping"></el-option>
-                          <el-option label="Other" value="Other"></el-option>
-                        </el-select>
-                      </div>
-                      <span class="fc-form-item-title-span2" style="margin-left: 5px;">( If your project involves multiple methodologies, please select "Add Another Methodology"
-                                  after you complete this specs sheet. )</span>
-                    </div>
-                  </div>
-                   <hr style="background-color:#D8D8D8; height:1px; border:none;margin-top: 35px;display: none;" class="hr">
+
                   <div class="scope-item-info scope-service">
-                    <div class="project-scope-service-title">Service Items / Deliverables:</div>
-                    <div class="item-info-box cost-content">
-                      <div>
-                        <el-checkbox v-model="domain.fieldworkCost" :key="domain.index" @change="changeFieldwork(domain)" ></el-checkbox>
-                        <span class="fieldwork-title"> Fieldwork Cost (including sample, recruiting, incentive & incentive handlng fees)</span>
-                      </div>
 
-                      <div class="cost-cc" v-for="(v,i) in domain.fieldworkCostArr" v-show="domain.fieldworkCost">
-                        <div class="cost-box" >
-                          <div class="cost-box-item">
-                            <span class="cost-box-item-title">Type of Respondents:</span>
-                            <el-select v-model="v.typeRespondents" :key="v.i" placeholder="" @change="changeTypeRespondents(domain,v)">
-                              <el-option label="B2C (consumers)" value="B2C (consumers)"></el-option>
-                              <el-option label="B2B (business decision makers or professionals)" value="B2B (business decision makers or professionals)"></el-option>
-                              <el-option label="Medical practitioners (e.g. physicians, nurses)" value="Medical practitioners (e.g. physicians, nurses)"></el-option>
-
-                            </el-select>
-                          </div>
-                          <div class="cost-box-item">
-                            <span class="cost-box-item-title">Specific Recruiting Criteria:</span>
-                            <div style="width: 200px;display: inline-block;">
-                              <el-input v-model="v.specificRecruiting" :key="v.i" placeholder=""></el-input>
-                            </div>
-
-                          </div>
-                          <div class="cost-box-s1">
-                            <div class="cost-box-item oneIR">
-                              <span class="cost-box-item-title">Estimated IR / Recruiting Difficulty:</span>
-                              <el-select v-model="v.IR" :key="v.i" placeholder="">
-                                <el-option label="<1%" value="<1%"></el-option>
-                                <el-option label="1-5%" value="1-5%"></el-option>
-                                <el-option label="6-10%" value="6-10%"></el-option>
-                                <el-option label="11-20%" value="11-20%"></el-option>
-                                <el-option label="21-30%" value="21-30%"></el-option>
-                                <el-option label="31-50%" value="31-50%"></el-option>
-                                <el-option label="51-80%" value="51-80%"></el-option>
-                                <el-option label=">80%" value=">80%"></el-option>
-                              </el-select>
-                            </div>
-
-                            <div class="cost-box-item oneTargetType">
-                              <span class="cost-box-item-title">Target Type of Practitioners:</span>
-                              <el-select v-model="v.targetType" :key="v.i" placeholder="">
-                                <el-option label="Physicians (GP/PCP/HCP)" value="Physicians (GP/PCP/HCP)"></el-option>
-                                <el-option label="Physician Specialists (e.g. Oncologists, Cardiologists, Dermatologists)" value="Physician Specialists (e.g. Oncologists, Cardiologists, Dermatologists)"></el-option>
-                                <el-option label="Nurses" value="Nurses"></el-option>
-                                <el-option label="Pharmacists" value="Pharmacists"></el-option>
-                                <el-option label="Hospital Procurement / Management" value="Hospital Procurement / Management"></el-option>
-                                <el-option label="KOLs" value="KOLs"></el-option>
-                                <el-option label="Payers" value="Payers"></el-option>
-                                <el-option label="Lab Managers/Directors" value="Lab Managers/Directors"></el-option>
-
-                              </el-select>
-                            </div>
-
-                            <div class="cost-box-item">
-                              <span class="cost-box-item-title">Length of Survey:</span>
-                              <el-select v-model="v.lengthSurvey" :key="v.i" placeholder="">
-                                <el-option  value="5 minutes or shorter"></el-option>
-                                <el-option  value="6-10 minutes"></el-option>
-                                <el-option  value="11-15 minutes"></el-option>
-                                <el-option  value="16-20 minutes"></el-option>
-                                <el-option  value="21-25 minutes"></el-option>
-                                <el-option  value="26-30 minutes"></el-option>
-                                <el-option  value="31-35 minutes"></el-option>
-                                <el-option  value="36-40 minutes"></el-option>
-                                <el-option  value="41-45 minutes"></el-option>
-                              </el-select>
-                            </div>
-                            <div class="cost-box-item">
-                              <span class="cost-box-item-title">Sample Size:</span>
-                              <div style="width: 200px;display: inline-block;">
-                                <el-input v-model="v.sampleSize" :key="v.i" type="number"></el-input>
-                              </div>
-
-                            </div>
-                          </div>
-
-                        </div>
-                        <div  class="remove-cost-box"  v-show="i > 0 " :key="v.i" @click="removeCostContent(domain,v)"><i class="el-icon-remove"></i></div>
-                      </div>
-                      <div class="item-info-box add-cost-content">
-                        <div :key="domain.index" @click="addCostContent(domain)" v-show="domain.fieldworkCost"><i class="el-icon-circle-plus"></i> Add Anogher Type of Respondents</div>
-                      </div>
-                    </div>
                     <div class="item-info-box additional-Services">
                       <span class="fieldwork-title" >Additional Services Required:</span>
                       <el-checkbox-group v-model="domain.additionalServices" :key="domain.index" @change="changeAdditionalServices(domain)"  style="margin-top: 10px;">
-
+                        <div style="margin-bottom: 10px;">
+                          <el-checkbox  label="Design of Questionnaire" border></el-checkbox>
+                        </div>
                         <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Translation" border>
                             Translation of study materials (estimated word count <input type="number" :key="domain.index" v-model="domain.additionalServicesTranslation" @change="changeAdditionalTranslationInput(domain)"> )
                           </el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Programming & Hosting" border></el-checkbox>
                         </div>
                         <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Data preparation / Data in Excel or SPSS" border></el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Cross" border>
                             Cross-tabulation, how many <input type="number" v-model="domain.additionalServicesCross" :key="domain.index" @change="changeAdditionalCrossInput(domain)">
                           </el-checkbox>
                         </div>
                         <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Advanced Analysis  (e.g. segmentation, conjoint analysis, MaxDiff, etc.)" border></el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Topline report" border></el-checkbox>
                         </div>
                         <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Full report" border></el-checkbox>
+                        </div>
+                        <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Other" border>Other services, specify <input type="text" :key="domain.index" v-model="domain.additionalServicesOther" @change="changeAdditionalOtherInput(domain)"></el-checkbox>
                         </div>
 
@@ -184,13 +89,15 @@
 
             </div>
             <el-row>
-              <div class="add-methodology" @click="addMethodology"><i class="el-icon-circle-plus"></i> Add Another Methodology</div>
+<!--              <div class="add-methodology" @click="addMethodology"><i class="el-icon-circle-plus"></i> Add Another Methodology</div>-->
               <el-button class="save-btn" type="primary" @click="submit">Save</el-button>
               <div class="save-btn-remind" v-show="btn_remind">
                       <span class="fc-form-item-title-span2">( Please provide more details on your project requirements & scope, our bidding team will get back to you shortly. )</span>
               </div>
             </el-row>
         </el-form>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </div>
 
@@ -202,6 +109,7 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import Step from '@/components/Step'
+  import { createFieldwork } from '@/api/quota'
 
 
 
@@ -213,18 +121,7 @@
         activeName:'China（mainland）',
 
             scopeList:[{
-              methodology: '',
-              fieldworkCost: '',
-              fieldworkCostArr: [{
-                typeRespondents: '',
-                specificRecruiting: '',
-
-                IR: '',
-                lengthSurvey: '',
-                sampleSize: '',
-                targetType: '',
-
-              }],
+              methodology:'CAPI',
               additionalServices:[],
               additionalServicesTranslation:'',
               additionalServicesCross:'',
@@ -271,32 +168,33 @@
       }
 
       // 获取项目类型然后跳转到对应页面
-      var projectMeth = this.$cookie.getCookie('project_methodologyType');
-      if (projectMeth == '1'){
-        this.$router.push({
-          name: 'set-qualitative-methodology',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-      if (projectMeth == '2'){
-        this.$router.push({
-          name: 'set-quantitative-methodology',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
+      // var projectMeth = this.$cookie.getCookie('project_methodologyType');
+      // if (projectMeth == '1'){
+      //   this.$router.push({
+      //     name: 'set-qualitative-methodology',  // 路由的名称
+      //     query: {
+      //     }
+      //   });
+      //   return false;
+      // }
+      // if (projectMeth == '2'){
+      //   this.$router.push({
+      //     name: 'set-quantitative-methodology',  // 路由的名称
+      //     query: {
+      //     }
+      //   });
+      //   return false;
+      // }
 
     },
     mounted(){
       $('#step').step({
-        index:'2',
+        index:'4',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:3,
-        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
+        stepCount:6,
+        type:'2',
+        stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
       this.activeName='China（mainland）';
     },
@@ -561,7 +459,20 @@
 
       },
       submit(){
-          console.log(this.scopeList);
+        // console.log(this.scopeList);
+        var met_id = this.$cookie.getCookie('methodology_id');
+        var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+        // console.log(this.scopeList[0].fieldworkCostArr);
+        var jsonRes = JSON.stringify( this.scopeList[0] );
+        console.log(jsonRes);
+
+        createFieldwork(met_id,this.activeName,jsonRes).then(response => {
+          if (response.code == '1'){
+            console.log(response);
+          }
+        }).catch(() => {
+          this.loading = false
+        });
       },
     }
   }
@@ -570,6 +481,7 @@
 <style scoped>
   .box{
     width: 900px;
+    padding-bottom: 100px;
   }
 
   .fc-title-left{
@@ -712,7 +624,7 @@
     clear: both;
   }
   .scope-service{
-    display: none;
+    /*display: none;*/
   }
   .save-btn{
     margin-top: 30px;

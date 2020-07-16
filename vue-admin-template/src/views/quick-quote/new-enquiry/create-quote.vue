@@ -54,7 +54,7 @@
               type="text">
               Add other
               <br /><br />
-              methodology type
+              methodology
             </el-button>
 
           </template>
@@ -329,28 +329,33 @@
       },
 
       addOtherMethodologyBtn(index,row){
-        this.dialogMethodology3=true;
-        this.$cookie.setCookie('project_number',row.number,'1');
-        this.$cookie.delCookie('project_methodologyType');
-        var pnumber = row.number;
-        this.addOtherMethRadioStatus1 =false;
-        this.addOtherMethRadioStatus2 =false;
-        getMeth(pnumber).then(response => {
-          if (response.code == '1'){
-                if (response.data == '1'){
-                      this.addOtherMethRadioStatus1 =true;
-                      this.addOtherMethodology ='Quantitative';
-                }else if(response.data == '2'){
-                      this.addOtherMethRadioStatus2=true;
-                      this.addOtherMethodology ='Qualitative';
-                }else if(response.data == '3'){
-                  this.addOtherMethRadioStatus1 =true;
-                  this.addOtherMethRadioStatus2=true;
-                }
+        this.$router.push({
+          name: 'set-methodology',  // 路由的名称
+          query: {
           }
-        }).catch(() => {
-          this.loading = false;
-        });
+        })
+        // this.dialogMethodology3=true;
+        // this.$cookie.setCookie('project_number',row.number,'1');
+        // this.$cookie.delCookie('project_methodologyType');
+        // var pnumber = row.number;
+        // this.addOtherMethRadioStatus1 =false;
+        // this.addOtherMethRadioStatus2 =false;
+        // getMeth(pnumber).then(response => {
+        //   if (response.code == '1'){
+        //         if (response.data == '1'){
+        //               this.addOtherMethRadioStatus1 =true;
+        //               this.addOtherMethodology ='Quantitative';
+        //         }else if(response.data == '2'){
+        //               this.addOtherMethRadioStatus2=true;
+        //               this.addOtherMethodology ='Qualitative';
+        //         }else if(response.data == '3'){
+        //           this.addOtherMethRadioStatus1 =true;
+        //           this.addOtherMethRadioStatus2=true;
+        //         }
+        //   }
+        // }).catch(() => {
+        //   this.loading = false;
+        // });
 
       },
       addOtherMeth(){

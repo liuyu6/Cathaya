@@ -48,11 +48,43 @@ export function createEnquiry(number,content,project_name) {
   })
 }
 
-export function addCountry(number,country) {
+export function addCountry(met_id,country) {
   return request({
     url: '/Addcountry',
     method: 'get',
-    params: { number,country}
+    params: { met_id,country}
+  })
+}
+
+export function createMethodology(number,methodology) {
+  return request({
+    url: '/CreateMethodology',
+    method: 'get',
+    params: { number,methodology}
+  })
+}
+
+export function createFieldwork(met_id,country,fieldwork) {
+  return request({
+    url: '/CreateFieldwork',
+    method: 'post',
+    params: { met_id,country,fieldwork}
+  })
+}
+
+export function createAdditional(met_id,country,fieldwork) {
+  return request({
+    url: '/CreateAdditional',
+    method: 'post',
+    params: { met_id,country,fieldwork}
+  })
+}
+
+export function projectServices(met_id) {
+  return request({
+    url: '/ProjectServices',
+    method: 'get',
+    params: { met_id}
   })
 }
 

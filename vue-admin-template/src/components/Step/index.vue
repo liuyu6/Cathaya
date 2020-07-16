@@ -13,6 +13,7 @@
           stepContent:'.eis-stepContents',
           stepDirection:'x',
           index:'1',
+          type:'',
           showStepButton:false,
         }
       this.settings=$.extend({},this.defaults,opts);
@@ -20,6 +21,8 @@
     Step.prototype={
       init:function(){
         var that = this,
+          slink ='',
+          flink='',
           $stepBox=that.$el;
         // 初始化步骤条
         function _initStepBar(direct){
@@ -28,7 +31,7 @@
           if(direct==='x'){
             for(var i = 0;i<that.settings.stepCount;i++){
               if(i===that.settings.stepCount-1){
-                stepBarHtml+='<div class="eis-form-step" style="width:'+(100/that.settings.stepCount).toFixed(2)+'%">\n' +
+                stepBarHtml+='<div class="eis-form-step" style="width:'+(96/that.settings.stepCount).toFixed(2)+'%">\n' +
                   '            <div class="eis-step-head">\n' +
                   '                <div class="eis-step-icon">\n' +
                   '                    <div class="step-icon-txt">'+(i+1)+'</div>\n' +
@@ -37,7 +40,7 @@
                   '            <div class="eis-step-main">'+that.settings.stepTitles[i]+'</div>\n' +
                   '        </div>';
               }else{
-                stepBarHtml+='<div class="eis-form-step" style="width:'+(100/that.settings.stepCount).toFixed(2)+'%">\n' +
+                stepBarHtml+='<div class="eis-form-step" style="width:'+(96/that.settings.stepCount).toFixed(2)+'%">\n' +
                   '            <div class="eis-step-head">\n' +
                   '                <div class="eis-step-icon">\n' +
                   '                    <div class="step-icon-txt">'+(i+1)+'</div>\n' +
@@ -174,28 +177,34 @@
           _initStepFooter(0)
         }
         // 处理步骤内容
+        console.log(that.settings.type);
+        if(that.settings.type == '1'){
+          slink = '/#/quick-quote/set-qualitative-additional'
+          flink = '/#/quick-quote/set-qualitative-fieldwork'
+        }else if(that.settings.type == '2'){
+          slink = '/#/quick-quote/set-quantitative-additional'
+          flink = '/#/quick-quote/set-quantitative-fieldwork'
+        }
         function _initStepCon(i){
           switch (i) {
             case 0:
               location.href="/#/quick-quote/set-quote-background"
               break;
             case 1:
-              location.href="/#/quick-quote/set-project-market"
+              location.href="/#/quick-quote/set-methodology"
               break;
             case 2:
-              location.href="/#/quick-quote/set-qualitative-methodology"
+              location.href="/#/quick-quote/set-project-market"
               break;
             case 3:
-              location.href="http://13.230.166.63/laravel/public/admin/AddProjectd"
+              location.href=flink;
               break;
             case 4:
-              location.href="http://13.230.166.63/laravel/public/admin/AddProjecte"
+               location.href=slink;
               break;
             case 5:
-              location.href="http://13.230.166.63/laravel/public/admin/AddProjectf"
+              location.href="/#/quick-quote/project-review"
               break;
-            case 6:
-              location.href="http://13.230.166.63/laravel/public/admin/AddProjectg"
           }
           // alert(i);
           // var $stepContent = that.$el.find(that.settings.stepContent),
@@ -295,7 +304,7 @@
     padding:0;
     font-size:0;
     position: relative;
-    left: 80px;
+    left: 30px;
   }
   .eis-vertical-steps .eis-form-steps{
     overflow: hidden;
@@ -408,7 +417,7 @@
     padding:6px 0 0 0;
     color:#666;
     /*text-align: center;*/
-    margin-left: -120px;
+    margin-left: 10px;
   }
   .eis-vertical-steps .eis-form-step .eis-step-main{
     overflow: hidden;

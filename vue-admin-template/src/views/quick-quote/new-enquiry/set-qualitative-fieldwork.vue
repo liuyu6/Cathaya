@@ -5,7 +5,8 @@
     <step></step>
     <div class="mcontent">
       <div class="fc-item fc-content-scope">
-        <el-tabs v-model="activeName" @tab-click="handleCheck" :before-leave="beforeLeaveTab" @tab-remove="removeTab" class="areaScope">
+<!--        已选择国家-->
+        <el-tabs type="border-card" v-model="activeName" @tab-click="handleCheck" :before-leave="beforeLeaveTab" @tab-remove="removeTab" class="areaScope">
           <el-tab-pane
             v-for="(item, index) in areaScope"
             :key="item.name"
@@ -13,36 +14,13 @@
             :name="item.name"
           >
           </el-tab-pane>
-        </el-tabs>
 
-        <el-form ref="" v-model="scopeList" >
+
+          <el-form ref="" v-model="scopeList" >
 
             <div class="scope-content"  v-for="(domain, index) in scopeList">
-              <div  class="remove-scope-box"  v-show="index > 0 " :key="domain.index" @click="removeScopeContent(domain)"><i class="el-icon-remove"></i></div>
               <div class="scope-item project-scope">
-                  <div class="scope-item-info">
-                    <div>
-                      <div class="item-info-title">Methodology</div>
-                      <div class="item-info-box">
-                        <el-select v-model="domain.methodology" :key="domain.index" placeholder="请选择" @change="changeMethodology(domain)">
-                          <el-option label="IDI" value="IDI"></el-option>
-                          <el-option label="TDI" value="TDI"></el-option>
-                          <el-option label="Dyad" value="Dyad"></el-option>
-                          <el-option label="Trio" value="Trio"></el-option>
-                          <el-option label="Mini-Focus Group" value="Mini-Focus Group"></el-option>
-                          <el-option label="Focus Group" value="Focus Group"></el-option>
-                          <el-option label="In home/context Ethnography" value="In home/context Ethnography"></el-option>
-                          <el-option label="Desk Research" value="Desk Research"></el-option>
-                          <el-option label="Other" value="Other"></el-option>
-                        </el-select>
-                      </div>
-                      <span class="fc-form-item-title-span2" style="margin-left: 5px;">( If your project involves multiple methodologies, please select "Add Another Methodology"
-                                  after you complete this specs sheet. )</span>
-                    </div>
-                  </div>
-                   <hr style="background-color:#D8D8D8; height:1px; border:none;margin-top: 35px;display: none;" class="hr">
                   <div class="scope-item-info scope-service">
-                    <div class="project-scope-service-title">Service Items / Deliverables:</div>
                     <div class="item-info-box cost-content">
                       <div>
                         <el-checkbox v-model="domain.fieldworkCost" :key="domain.index" @change="changeFieldword(domain)" ></el-checkbox>
@@ -67,6 +45,8 @@
                             </div>
 
                           </div>
+
+
                           <div class="cost-box-s1">
                             <div class="cost-box-item oneIR">
                               <span class="cost-box-item-title">Estimated IR / Recruiting Difficulty:</span>
@@ -190,69 +170,11 @@
                         <div :key="domain.index" @click="addCostContent(domain)" v-show="domain.fieldworkCost"><i class="el-icon-circle-plus"></i> Add Anogher Type of Respondents</div>
                       </div>
                     </div>
-                    <div class="item-info-box additional-Services">
-                      <span class="fieldwork-title" >Additional Services Required:</span>
-                      <el-checkbox-group v-model="domain.additionalServices" :key="domain.index" @change="changeAdditionalServices(domain)"  style="margin-top: 10px;">
-                        <div style="margin-bottom: 10px;">
-                          <el-checkbox  label="Moderation" border></el-checkbox>
-                          <el-checkbox  label="Facility rental" border></el-checkbox>
-                          <el-checkbox  label="Audio recording" border></el-checkbox>
-                          <el-checkbox  label="Video recording" border></el-checkbox>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                          <el-checkbox  label="Design of screener" border></el-checkbox>
-                          <el-checkbox  label="Translation" border>
-                            Translation of study materials (estimated word count <input type="number" v-model="domain.additionalServicesTranslation" :key="domain.index" @change="changeAdditionalTranslationInput(domain)"> )
-                          </el-checkbox>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                          <el-checkbox  label="Design of interview guide" border></el-checkbox>
-                          <el-checkbox  label="Transcript in local language" border></el-checkbox>
-                          <el-checkbox  label="Transcript in English" border></el-checkbox>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                          <el-checkbox  label="Simultaneous translation" border></el-checkbox>
-                          <el-checkbox  label="Topline report" border></el-checkbox>
-                          <el-checkbox  label="Full report" border></el-checkbox>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                          <el-checkbox  label="Other" border>Other services, specify <input type="text" v-model="domain.additionalServicesOther" :key="domain.index" @change="changeAdditionalOtherInput(domain)"></el-checkbox>
-                        </div>
-
-                      </el-checkbox-group>
-                    </div>
-                    <div class="item-info-box">
-                      <div class="fc-title-left">Project setup and management fee :</div>
-                      <div class="fc-inline-left">
-                        <el-input
-                          type="text"
-                          placeholder=""
-                          :key="domain.index"
-                          v-model="domain.managementFee">
-                        </el-input>
-                      </div>
-                    </div>
-                    <div class="item-info-box">
-                      <div class="fc-title-left">Special Requirements / Notes (if any) :</div>
-                      <div class="fc-inline-left">
-                        <el-input
-                          type="textarea"
-                          :rows="4"
-                          placeholder=""
-                          :key="domain.index"
-                          style="width: 400px;"
-                          v-model="domain.requirementsNotes">
-                        </el-input>
-                      </div>
-                    </div>
-
-
                   </div>
               </div>
 
             </div>
             <el-row>
-              <div class="add-methodology" @click="addMethodology"><i class="el-icon-circle-plus"></i> Add Another Methodology</div>
               <el-button class="save-btn" type="primary" @click="submit">Save</el-button>
               <div class="save-btn-remind" v-show="btn_remind">
                       <span class="fc-form-item-title-span2">( Please provide more details on your project requirements & scope,
@@ -260,6 +182,7 @@
               </div>
             </el-row>
         </el-form>
+        </el-tabs>
       </div>
     </div>
 
@@ -271,17 +194,18 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import Step from '@/components/Step'
+  import { createFieldwork } from '@/api/quota'
 
 
 
   export default {
-    name: 'set-project-methodology',
+    name: 'set-project-fieldwork',
     data(){
       return{
         btn_remind:false,
         activeName:'China（mainland）',
 
-            scopeList:[{
+        scopeList:[{
               methodology: '',
               fieldworkCost: '',
               fieldworkCostArr: [{
@@ -300,12 +224,6 @@
                 group_targetType: '',
 
               }],
-              additionalServices:[],
-              additionalServicesTranslation:'',
-              additionalServicesOther:'',
-              managementFee:'',
-              requirementsNotes:'',
-
             }],
         areaScope: [
           {
@@ -348,7 +266,7 @@
       var projectMeth = this.$cookie.getCookie('project_methodologyType');
       if (projectMeth == '1'){
         this.$router.push({
-          name: 'set-qualitative-methodology',  // 路由的名称
+          name: 'set-qualitative-fieldwork',  // 路由的名称
           query: {
           }
         });
@@ -356,22 +274,27 @@
       }
       if (projectMeth == '2'){
         this.$router.push({
-          name: 'set-quantitative-methodology',  // 路由的名称
+          name: 'set-quantitative-fieldwork',  // 路由的名称
           query: {
           }
         });
         return false;
       }
+
+
     },
     mounted(){
       $('#step').step({
-        index:'2',
+        index:'3',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:3,
-        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
+        stepCount:6,
+        type:'1',
+        stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
       this.activeName='China（mainland）';
+      // 初始化methodology
+      this.scopeList[0].methodology="IDI";
     },
     methods:{
       removeTab(targetName) {
@@ -428,37 +351,6 @@
           throw new Error("取消成功！");
         });
       },
-      changeMethodology(item) {
-        var index = this.scopeList.indexOf(item);
-        this.scopeList[index].fieldworkCostArr.length=0;
-        this.scopeList[index].fieldworkCost=false;
-
-        var val =item.methodology;
-        // console.log(val);
-        var itemDiv =  $('.scope-content')[index];
-
-        if(val == 'Desk Research' || val == 'Other'){
-          $(itemDiv).find('.scope-service').css('display','none');
-          $(itemDiv).find('.hr').css('display','none');
-        }else{
-          $(itemDiv).find('.scope-service').css('display','block');
-          $(itemDiv).find('.hr').css('display','block');
-        }
-
-        for (var i = 0; i<this.scopeList.length;i++){
-          if(this.scopeList[i].methodology =='Desk Research' || this.scopeList[i].methodology == 'Other' ){
-            this.btn_remind=true;
-            return false;
-          }else{
-            this.btn_remind=false;
-            return false;
-            // $('.save-btn-remind').css('display','none');
-          }
-          console.log(this.scopeList[i].methodology);
-        }
-
-
-      },
 
       changeFieldword(item) {
 
@@ -492,50 +384,7 @@
         }
 
       },
-      changeAdditionalServices(item){
 
-          var arr = item.additionalServices;
-          // var index = this.scopeList.indexOf(item);
-          // var scopeDiv = $('.scope-content')[index];
-          var key = $.inArray("Translation", arr );
-          var key2 = $.inArray("Other", arr );
-
-          if(key >= 0){
-              if(item.additionalServicesTranslation=='' ){
-
-                  this.$alert('Please fill in the input box.', '', {
-                    confirmButtonText: 'confirm',
-                  });
-
-                arr.splice($.inArray("Translation", arr),1);
-              }
-          }
-
-        if(key2 >= 0){
-          if(item.additionalServicesOther=='' ){
-            this.$alert('Please fill in the input box.', '', {
-              confirmButtonText: 'confirm',
-            });
-            arr.splice($.inArray("Other", arr),1);
-          }
-        }
-
-
-          console.log(item.additionalServices);
-
-      },
-      changeAdditionalTranslationInput(item){
-        var arr = item.additionalServices;
-        if (item.additionalServicesTranslation == ''){
-          arr.splice($.inArray("Translation", arr),1);
-        }
-      },
-      changeAdditionalOtherInput(item){
-        var arr = item.additionalServices;
-        if (item.additionalServicesOther == ''){
-          arr.splice($.inArray("Other", arr),1);
-        }
-      },
       changeTypeRespondents(item1,item2) {
         var index1 = this.scopeList.indexOf(item1);
         var index2 = this.scopeList[index1].fieldworkCostArr.indexOf(item2);
@@ -605,49 +454,30 @@
         // console.log(index1);
         // console.log(index2);
         this.scopeList[index1].fieldworkCostArr.splice(index2);
-
-      },
-      removeScopeContent(item){
-        // this.scopeList.splice(this.key);  //删除index为i,位置的数组元素
-        var index = this.scopeList.indexOf(item);
-        this.scopeList.splice(index);
-      },
-      addMethodology(){
-        console.log(typeof(this.scopeList));
-
-        this.scopeList.push(
-          {
-            methodology:'',
-            fieldworkCost:'',
-            fieldworkCostArr:[{
-              typeRespondents:'',
-              specificRecruiting:'',
-
-              one_IR:'',
-              one_lengthInterview:'',
-              one_sampleSize:'',
-              one_targetType:'',
-
-              group_IR:'',
-              group_lengthInterview:'',
-              group_numberRespondentsGroup :'',
-              group_numberGroupsTotal :'',
-              group_targetType:'',
-
-            }],
-            additionalServices:[],
-            additionalServicesTranslation:'',
-            additionalServicesOther:'',
-            managementFee:'',
-            requirementsNotes:'',
-          }
-        );
-        // let arr = Array.from(this.scopeList);
-        //console.log(this.scopeList);
-
       },
       submit(){
-          console.log(this.scopeList);
+          // console.log(this.scopeList);
+          var met_id = this.$cookie.getCookie('methodology_id');
+          var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+          // console.log(this.scopeList[0].fieldworkCostArr);
+          var jsonRes = JSON.stringify( this.scopeList[0] );
+          console.log(jsonRes);
+
+        createFieldwork(met_id,this.activeName,jsonRes).then(response => {
+            if (response.code == '1'){
+                // if(project_methodologyType == '1'){
+                //   this.$router.push({
+                //     name: 'set-qualitative-additional',  // 路由的名称
+                //   })
+                // }else if(project_methodologyType == '2'){
+                //   this.$router.push({
+                //     name: 'set-quantitative-additional',  // 路由的名称
+                //   })
+                // }
+            }
+          }).catch(() => {
+            this.loading = false
+          });
       },
     }
   }
@@ -716,13 +546,7 @@
     margin-left: 20px;
     margin-top: 30px;
   }
-  .item-info-title{
-    float: left;
-    line-height: 40px;
-    margin-right: 10px;
-    font-size: 16px;
-    color: #2D3E48;
-  }
+
   .item-info-box{
     float: left;
     margin-bottom: 15px;
@@ -785,21 +609,13 @@
     line-height: inherit;
     float: left;
   }
-  .additional-Services{
-    display: block;
-  }
-  .add-methodology{
-    font-size: 18px;
-    float: right;
-    color: #409EFF;
-    cursor: pointer;
-  }
+
   .mcontent{
     width: 100%;
     clear: both;
   }
   .scope-service{
-    display: none;
+    /*display: none;*/
   }
   .save-btn{
     margin-top: 30px;

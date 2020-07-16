@@ -33,12 +33,14 @@
   import Step from '@/components/Step'
   import { mapGetters } from 'vuex'
   import { createEnquiry } from '@/api/quota'
+  import { projectServices } from '@/api/quota'
 
 
   export default {
     name: 'set-quote-background',
     data(){
       return{
+          methodology_type:'',
           setBackgroundForm: {
             project_name:'',
             project_background:''
@@ -57,6 +59,19 @@
         });
         return false;
       }
+      this.methodology_type = this.$cookie.getCookie('project_methodologyType');
+      var med_id = this.$cookie.getCookie('methodology_id');
+      if(med_id !== null ){
+        projectServices(med_id).then(response => {
+          if (response.code == '1'){
+            console.log(response);
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+      }
+
+
     },
 
     components: {
@@ -75,14 +90,15 @@
         index:'0',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:3,
-        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
+        stepCount:6,
+        type:this.methodology_type,
+        stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       })
     },
     methods:{
       saveProjectBackground(){
         // 获取地址栏参数
-        var number = this.$getUrl.getUrlKey('number');
+        var number = this.$cookie.getCookie('project_number');
         var project_name = this.setBackgroundForm.project_name;
         var content = this.setBackgroundForm.project_background;
         console.log(number);
@@ -100,7 +116,7 @@
 
               // 设置项目名称
               this.$router.push({
-                name: 'set-project-market',  // 路由的名称
+                name: 'set-methodology',  // 路由的名称
                 query: {
                   'number':number
                 }
@@ -128,6 +144,6 @@
   }
   .saveBtn{
     width: 100%;
-    text-align: center;
+    text-align: left;
   }
 </style>

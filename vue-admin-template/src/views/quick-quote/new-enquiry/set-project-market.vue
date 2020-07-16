@@ -88,6 +88,7 @@
     name: 'set-project-market',
     data(){
       return {
+        methodology_type:'',
         areaForm: {
           confirmArea:['Taiwan','Japan'],
           othersArea:'',
@@ -105,6 +106,7 @@
         });
         return false;
       }
+      this.methodology_type = this.$cookie.getCookie('project_methodologyType');
     },
     components: {
       Breadcrumb,
@@ -113,11 +115,12 @@
     },
     mounted(){
       $('#step').step({
-        index:'1',
+        index:'2',
         stepDirection:'x',
         showStepButton:true,
-        stepCount:3,
-        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
+        stepCount:6,
+        type:this.methodology_type,
+        stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       })
     },
     methods:{
@@ -140,19 +143,23 @@
             confirmButtonText: 'confirm',
           });
         }else{
-          var number = this.$getUrl.getUrlKey('number');
-          console.log(marketArr);
+
+          var met_id = this.$cookie.getCookie('methodology_id');
+          var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
           var marketArr2 = marketArr.join(',')
-          addCountry(number,marketArr2).then(response => {
+          addCountry(met_id,marketArr2).then(response => {
             if (response.code == '1'){
                 // console.log(response);
-
-              this.$router.push({
-                name: 'set-qualitative-methodology',  // 路由的名称
-                query: {
-                  'number':number
+                if(project_methodologyType == '1'){
+                    this.$router.push({
+                    name: 'set-qualitative-fieldwork',  // 路由的名称
+                  })
+                }else if(project_methodologyType == '2'){
+                  this.$router.push({
+                    name: 'set-quantitative-fieldwork',  // 路由的名称
+                  })
                 }
-              })
+
 
             }
           }).catch(() => {
