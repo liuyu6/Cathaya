@@ -238,6 +238,13 @@ export const constantRoutes = [
         meta: { title: 'Review' }
       },
       {
+        path: 'quota-preview',
+        name: 'quota-preview',
+        hidden:true,
+        component: () => import('@/views/quick-quote/new-enquiry/quota-preview'),
+        meta: { title: 'Quota Preview' }
+      },
+      {
         path: 'preliminary-quotation',
         name: 'preliminary-quotation',
         hidden:true,

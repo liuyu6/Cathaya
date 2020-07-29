@@ -48,25 +48,33 @@ export function createEnquiry(number,content,project_name) {
   })
 }
 
-export function addCountry(met_id,country) {
+export function addCountry(met_id,other_country,country) {
   return request({
     url: '/Addcountry',
-    method: 'get',
-    params: { met_id,country}
+    method: 'post',
+    params: { met_id,other_country,country}
   })
 }
 
-export function createMethodology(number,methodology) {
+export function createMethodology(number,methodology,met_id) {
   return request({
     url: '/CreateMethodology',
     method: 'get',
-    params: { number,methodology}
+    params: { number,methodology,met_id}
   })
 }
 
 export function createFieldwork(met_id,country,fieldwork) {
   return request({
     url: '/CreateFieldwork',
+    method: 'post',
+    params: { met_id,country,fieldwork}
+  })
+}
+
+export function quantitativeFieldwork(met_id,country,fieldwork) {
+  return request({
+    url: '/QuantitativeFieldwork',
     method: 'post',
     params: { met_id,country,fieldwork}
   })
@@ -80,6 +88,15 @@ export function createAdditional(met_id,country,fieldwork) {
   })
 }
 
+export function quantitativeAdditional(met_id,country,fieldwork) {
+  return request({
+    url: '/QuantitativeAdditional',
+    method: 'post',
+    params: { met_id,country,fieldwork}
+  })
+}
+
+
 export function projectServices(met_id) {
   return request({
     url: '/ProjectServices',
@@ -88,6 +105,14 @@ export function projectServices(met_id) {
   })
 }
 
+// 项目信息
+export function projectInformation(number) {
+  return request({
+    url: '/ProjectInformation',
+    method: 'get',
+    params: {number}
+  })
+}
 
 
 

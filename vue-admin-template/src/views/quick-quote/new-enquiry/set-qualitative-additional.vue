@@ -72,6 +72,14 @@
                               </div>
 
                               <div style="margin-bottom: 10px;overflow: hidden;">
+                                <el-checkbox  label="Transcript in English" border style="float: left;" size='medium'></el-checkbox>
+                                <el-input size="medium" v-model="scopeList.transEnglish_input" class="add_input" type="number" min="1"
+                                          v-show="scopeList.additionalServices.includes('Transcript in English')"
+                                ></el-input>
+                              </div>
+
+
+                              <div style="margin-bottom: 10px;overflow: hidden;">
                                 <el-checkbox  label="Simultaneous translation" border style="float: left;" size='medium'></el-checkbox>
                                 <el-input size="medium" v-model="scopeList.simultaneous_input" class="add_input" type="number" min="1"
                                           v-show="scopeList.additionalServices.includes('Simultaneous translation')"
@@ -79,22 +87,6 @@
                               </div>
 
 
-
-
-<!--                              <div style="margin-bottom: 10px;">-->
-<!--                                <el-checkbox  label="Programming & Hosting" border></el-checkbox>-->
-<!--                              </div>-->
-<!--                              <div style="margin-bottom: 10px;">-->
-<!--                                <el-checkbox  label="Data preparation / Data in Excel or SPSS" border></el-checkbox>-->
-<!--                              </div>-->
-<!--                              <div style="margin-bottom: 10px;">-->
-<!--                                <el-checkbox  label="Cross" border>-->
-<!--                                  Cross-tabulation, how many <input type="number" v-model="domain.additionalServicesCross" :key="domain.index" @change="changeAdditionalCrossInput(domain)">-->
-<!--                                </el-checkbox>-->
-<!--                              </div>-->
-<!--                              <div style="margin-bottom: 10px;">-->
-<!--                                <el-checkbox  label="Advanced Analysis  (e.g. segmentation, conjoint analysis, MaxDiff, etc.)" border></el-checkbox>-->
-<!--                              </div>-->
                               <div style="margin-bottom: 10px;">
                                 <el-checkbox  label="Topline report" border></el-checkbox>
                               </div>
@@ -108,32 +100,29 @@
 
                             </el-checkbox-group>
                           </div>
-
-
-<!--                          <div class="item-info-box">-->
-<!--                            <div class="fc-title-left">Project setup and management fee :</div>-->
-<!--                            <div class="fc-inline-left">-->
-<!--                              <el-input-->
-<!--                                type="text"-->
-<!--                                placeholder=""-->
-<!--                                v-model="scopeList.managementFee">-->
-<!--                              </el-input>-->
-<!--                            </div>-->
-<!--                          </div>-->
-<!--                          <div class="item-info-box">-->
-<!--                            <div class="fc-title-left">Special Requirements / Notes (if any) :</div>-->
-<!--                            <div class="fc-inline-left">-->
-<!--                              <el-input-->
-<!--                                type="textarea"-->
-<!--                                :rows="4"-->
-<!--                                placeholder=""-->
-<!--                                style="width: 400px;"-->
-<!--                                v-model="scopeList.requirementsNotes">-->
-<!--                              </el-input>-->
-<!--                            </div>-->
-<!--                          </div>-->
-
-
+                          <div class="item-info-box">
+                            <div class="fc-title-left">Project setup and management fee :</div>
+                            <div class="fc-inline-left">
+                              <el-input
+                                type="text"
+                                placeholder=""
+                                style="width: 200px;"
+                                v-model="scopeList.managementFee">
+                              </el-input>
+                            </div>
+                          </div>
+                          <div class="item-info-box">
+                            <div class="fc-title-left">Special Requirements / Notes (if any) :</div>
+                            <div class="fc-inline-left">
+                              <el-input
+                                type="textarea"
+                                :rows="4"
+                                placeholder=""
+                                style="width: 500px;"
+                                v-model="scopeList.requirementsNotes">
+                              </el-input>
+                            </div>
+                          </div>
                         </div>
                     </div>
                   </div>
@@ -173,11 +162,15 @@
               audio_input:"",
               video_input:'',
               translationLocal_input:'',
-              transEnglish:'',
+              transEnglish_input:'',
               simultaneous_input:"",
+              designScreener_input:'',
+              designGuide_input:'',
+              toplineReport:'',
+              fullReport:'',
+
 
               additionalServicesTranslation:'',
-              additionalServicesCross:'',
               additionalServicesOther:'',
               managementFee:'',
               requirementsNotes:'',
@@ -370,8 +363,24 @@
         var met_id = this.$cookie.getCookie('methodology_id');
         var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
         // console.log(this.scopeList[0].fieldworkCostArr);
-        var jsonRes = JSON.stringify( this.scopeList[0] );
+
+        if(this.scopeList.additionalServices.includes('Design of screener')){
+          this.scopeList.designScreener_input =1;
+        }
+        if(this.scopeList.additionalServices.includes('Design of interview guide')){
+          this.scopeList.designGuide_input =1;
+        }
+        if(this.scopeList.additionalServices.includes('Topline report')){
+          this.scopeList.toplineReport =1;
+        }
+        if(this.scopeList.additionalServices.includes('Full report')){
+          this.scopeList.fullReport =1;
+        }
+
+        var jsonRes = JSON.stringify( this.scopeList );
         console.log(jsonRes);
+
+
 
         createAdditional(met_id,this.activeName,jsonRes).then(response => {
           if (response.code == '1'){
@@ -404,6 +413,11 @@
     overflow: hidden;
     margin-bottom: 20px;
   }
+  .fc-title-left{
+    float: left;
+    margin-right: 10px;
+    line-height: 40px;
+  }
 
   .fc-content-scope{
     padding: 15px;
@@ -434,7 +448,7 @@
   }
 
   .item-info-box{
-    float: left;
+    /*float: left;*/
     margin-bottom: 15px;
   }
   .project-scope{

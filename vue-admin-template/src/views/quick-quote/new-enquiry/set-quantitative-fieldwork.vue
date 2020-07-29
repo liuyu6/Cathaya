@@ -126,6 +126,7 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import Step from '@/components/Step'
+  import { quantitativeFieldwork } from '@/api/quota'
 
 
 
@@ -138,7 +139,7 @@
 
             scopeList:[{
               methodology:'',
-              fieldworkCost: '',
+              // fieldworkCost: '',
               fieldworkCostArr: [{
                 typeRespondents: '',
                 specificRecruiting: '',
@@ -219,6 +220,52 @@
       this.activeName='China（mainland）';
     },
     methods:{
+
+      // 页面初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+
+          // 获取项目类型然后跳转到对应页面
+          var projectMeth = this.$cookie.getCookie('project_methodologyType');
+          if (projectMeth == '1'){
+            this.$router.push({
+              name: 'set-qualitative-fieldwork',  // 路由的名称
+              query: {
+              }
+            });
+            return false;
+          }else{
+            // 页面初始化
+            projectInformation(projectNumber).then(response => {
+              if(response.code == '1'){
+                console.log(response);
+                var arr = response.data.method;
+                for(var i=0;i<arr.length;i++){
+                  if (met_id == arr[i].id){
+                    this.areaForm.confirmArea=arr[i].country.split(',');
+                    this.areaForm.othersArea=arr[i].other_country;
+                  }
+                }
+              }
+            }).catch(() => {
+              this.loading = false
+            });
+          }
+
+
+        }
+      },
+
       removeTab(targetName) {
         let tabs = this.editableTabs;
         let activeName = this.areaForm.confirmArea;
@@ -385,6 +432,28 @@
 
       submit(){
           console.log(this.scopeList);
+        // console.log(this.scopeList);
+        var met_id = this.$cookie.getCookie('methodology_id');
+        var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+        // console.log(this.scopeList[0].fieldworkCostArr);
+        var jsonRes = JSON.stringify( this.scopeList );
+        console.log(jsonRes);
+
+        quantitativeFieldwork(met_id,this.activeName,jsonRes).then(response => {
+          if (response.code == '1'){
+            // if(project_methodologyType == '1'){
+            //   this.$router.push({
+            //     name: 'set-qualitative-additional',  // 路由的名称
+            //   })
+            // }else if(project_methodologyType == '2'){
+            //   this.$router.push({
+            //     name: 'set-quantitative-additional',  // 路由的名称
+            //   })
+            // }
+          }
+        }).catch(() => {
+          this.loading = false
+        });
       },
     }
   }

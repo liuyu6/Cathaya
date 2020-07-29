@@ -4,25 +4,25 @@
 <!--  <Remindtext  ></Remindtext>-->
   <step></step>
   <div class="setBackgroundForm">
-    <el-row :gutter="10">
-      <el-col :xs="{span: 20, offset: 2}" :sm="{span: 18, offset: 3}">
-        <el-form ref="setBackgroundForm" :model="setBackgroundForm"   auto-complete="on" label-position="left">
+  <el-row :gutter="10">
+    <el-col :xs="{span: 20, offset: 2}" :sm="{span: 18, offset: 3}">
+      <el-form ref="setBackgroundForm" :model="setBackgroundForm"   auto-complete="on" label-position="left">
 
-          <el-form-item label="Project Name">
-            <el-input v-model="setBackgroundForm.project_name"></el-input>
-          </el-form-item>
+        <el-form-item label="Project Name">
+          <el-input v-model="setBackgroundForm.project_name"></el-input>
+        </el-form-item>
 
-          <el-form-item label="Background & Objectives">
-            <el-input type="textarea" v-model="setBackgroundForm.project_background" rows="6"></el-input>
-          </el-form-item>
-          <div class="saveBtn">
-            <el-button type="primary" style="width: 200px;" @click="saveProjectBackground">Save</el-button>
-          </div>
+        <el-form-item label="Background & Objectives">
+          <el-input type="textarea" v-model="setBackgroundForm.project_background" rows="6"></el-input>
+        </el-form-item>
+        <div class="saveBtn">
+          <el-button type="primary" style="width: 200px;" @click="saveProjectBackground">Save</el-button>
+        </div>
 
-        </el-form>
-      </el-col>
-    </el-row>
-  </div>
+      </el-form>
+    </el-col>
+  </el-row>
+</div>
 </div>
 </template>
 
@@ -34,6 +34,7 @@
   import { mapGetters } from 'vuex'
   import { createEnquiry } from '@/api/quota'
   import { projectServices } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
 
 
   export default {
@@ -48,28 +49,20 @@
       }
     },
     created(){
+      this.init();
 
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-      this.methodology_type = this.$cookie.getCookie('project_methodologyType');
-      var med_id = this.$cookie.getCookie('methodology_id');
-      if(med_id !== null ){
-        projectServices(med_id).then(response => {
-          if (response.code == '1'){
-            console.log(response);
-          }
-        }).catch(() => {
-          this.loading = false
-        });
-      }
+      // this.methodology_type = this.$cookie.getCookie('project_methodologyType');
+      // var med_id = this.$cookie.getCookie('methodology_id');
+      // if(med_id !== null ){
+      //   projectServices(med_id).then(response => {
+      //     if (response.code == '1'){
+      //       console.log(response);
+      //     }
+      //   }).catch(() => {
+      //     this.loading = false
+      //   });
+      // }
+
 
 
     },
@@ -93,9 +86,32 @@
         stepCount:6,
         type:this.methodology_type,
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
-      })
+      });
     },
     methods:{
+      // 页面初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+          // 页面初始化
+          projectInformation(projectNumber).then(response => {
+            if(response.code == '1'){
+              this.setBackgroundForm.project_name = response.data.project_name;
+              this.setBackgroundForm.project_background = response.data.content;
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+        }
+      },
       saveProjectBackground(){
         // 获取地址栏参数
         var number = this.$cookie.getCookie('project_number');

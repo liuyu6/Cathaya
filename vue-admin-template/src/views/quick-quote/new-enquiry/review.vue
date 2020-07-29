@@ -61,12 +61,13 @@
                 <el-button
                   size="mini"
                   type="primary"
-                  @click="handleDelete(scope.$index, scope.row)">Preview</el-button>
+                  @click="handlePreview(scope.$index, scope.row)">Preview</el-button>
 
               </template>
             </el-table-column>
           </el-table>
       <div class="saveBtn" style="margin-top: 30px;">
+        <el-button  style="width: 200px;" @click="AddMethodology">Add other methodology</el-button>
         <el-button type="primary" style="width: 200px;" @click="getQuot">Get Quick Quot</el-button>
       </div>
     </div>
@@ -148,11 +149,24 @@
           }
         })
       },
+      handleDelete(){
+
+      },
+      handlePreview(){
+        this.$router.push({
+          name: 'quota-preview',  // 路由的名称
+        })
+      },
       getQuot(){
         this.$router.push({
           name: 'preliminary-quotation',  // 路由的名称
           query: {
           }
+        })
+      },
+      AddMethodology(){
+        this.$router.push({
+          name: 'set-methodology',  // 路由的名称
         })
       }
     }

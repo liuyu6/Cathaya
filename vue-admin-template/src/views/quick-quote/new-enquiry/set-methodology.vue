@@ -46,6 +46,7 @@
   import $ from 'jquery'
   import Step from '@/components/Step'
   import { createMethodology } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
 
 
 
@@ -57,6 +58,8 @@
         methodology:'',
         methodology_type:'',
         active_methodology:'',
+
+
         qualitative_methodology: [{
           value: 'IDI',
           label: 'IDI',
@@ -90,8 +93,8 @@
         },{
           value: 'In home/context Ethnography',
           label: 'In home/context Ethnography',
-          disabled:true,
-          remind:1,
+          disabled:false,
+          remind:0,
         },{
           value: 'Desk Research',
           label: 'Desk Research',
@@ -136,8 +139,8 @@
         },{
           value: 'Mystery Shopping',
           label: 'Mystery Shopping',
-          disabled:true,
-          remind:1,
+          disabled:false,
+          remind:0,
         },{
           value: 'Other',
           label: 'Other',
@@ -152,29 +155,11 @@
       Step
     },
     created(){
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
 
-      // 获取项目类型展示对应内容 1是qualitative  2是quantitative
-      var projectMeth = this.$cookie.getCookie('project_methodologyType');
-      this.methodology_type = this.$cookie.getCookie('project_methodologyType');
 
-      if (projectMeth == '1'){
-        this.active_methodology = this.qualitative_methodology;
-        return false;
-      }
-      if (projectMeth == '2'){
-        this.active_methodology = this.quantitative_methodology;
-        return false;
-      }
+      this.init();
+
+
 
     },
     mounted(){
@@ -190,6 +175,63 @@
     },
     methods:{
 
+      // 页面初始化
+      init(){
+
+        // 获取项目类型展示对应内容 1是qualitative  2是quantitative
+        var projectMeth = this.$cookie.getCookie('project_methodologyType');
+        this.methodology_type = this.$cookie.getCookie('project_methodologyType');
+        if (projectMeth == '1'){
+          this.active_methodology = this.qualitative_methodology;
+        }
+        if (projectMeth == '2'){
+          this.active_methodology = this.quantitative_methodology;
+        }
+
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+          // 页面初始化
+          projectInformation(projectNumber).then(response => {
+            if(response.code == '1'){
+              console.log(response);
+              var arr = response.data.method;
+              // 初始化methodology选项
+              for(var i=0;i<arr.length;i++){
+                for (var j=0;j<this.active_methodology.length;j++){
+                  if (this.active_methodology[j].value == arr[i].methodology){
+                    this.active_methodology[j].disabled = true;
+                    this.active_methodology[j].remind = 1;
+                  }
+                }
+              }
+
+              for(var i=0;i<arr.length;i++){
+                if (met_id == arr[i].id){
+                  for (var j=0;j<this.active_methodology.length;j++){
+                    if (this.active_methodology[j].value == arr[i].methodology){
+                      this.active_methodology[j].disabled = false;
+                      this.active_methodology[j].remind = 0;
+                      this.methodology = arr[i].methodology;
+                    }
+                  }
+                }
+
+              }
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+        }
+      },
       changeMethodology(item) {
         var val =this.methodology;
         console.log(val);
@@ -204,13 +246,15 @@
       submit(){
         console.log(this.methodology);
         var number = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+
         if(this.methodology.length == ''){
           this.$alert('Please Select.', '', {
             confirmButtonText: 'confirm',
           });
           return false;
         }else{
-          createMethodology(number,this.methodology).then(response => {
+          createMethodology(number,this.methodology,met_id).then(response => {
             if (response.code == '1'){
               this.$cookie.setCookie('methodology_id',response.data.id,'1');
 

@@ -195,6 +195,7 @@
   import $ from 'jquery'
   import Step from '@/components/Step'
   import { createFieldwork } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
 
 
 
@@ -202,11 +203,10 @@
     name: 'set-project-fieldwork',
     data(){
       return{
+        methodology_type:'',
         btn_remind:false,
         activeName:'China（mainland）',
-
         scopeList:[{
-              methodology: '',
               fieldworkCost: '',
               fieldworkCostArr: [{
                 typeRespondents: '',
@@ -251,36 +251,7 @@
       Step
     },
     created(){
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-
-      // 获取项目类型然后跳转到对应页面
-      var projectMeth = this.$cookie.getCookie('project_methodologyType');
-      if (projectMeth == '1'){
-        this.$router.push({
-          name: 'set-qualitative-fieldwork',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-      if (projectMeth == '2'){
-        this.$router.push({
-          name: 'set-quantitative-fieldwork',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-
+      this.init();
 
     },
     mounted(){
@@ -289,14 +260,59 @@
         stepDirection:'x',
         showStepButton:true,
         stepCount:6,
-        type:'1',
+        type:this.methodology_type,
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
       this.activeName='China（mainland）';
-      // 初始化methodology
-      this.scopeList[0].methodology="IDI";
     },
     methods:{
+      // 页面初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+
+          // 获取项目类型然后跳转到对应页面
+          var projectMeth = this.$cookie.getCookie('project_methodologyType');
+          var met_id = this.$cookie.getCookie('methodology_id');
+
+          if (projectMeth == '2'){
+            this.$router.push({
+              name: 'set-quantitative-fieldwork',  // 路由的名称
+              query: {
+              }
+            });
+            return false;
+          }else{
+            // 页面初始化
+              projectInformation(projectNumber).then(response => {
+              if(response.code == '1'){
+                console.log(response);
+                var arr = response.data.method;
+                this.methodology_type=response.data.type;
+                // for(var i=0;i<arr.length;i++){
+                //     if(arr[i].id == met_id){
+                //       this.areaScope[i
+                //     }
+                // }
+              }
+            }).catch(() => {
+              this.loading = false
+            });
+          }
+
+
+        }
+      },
+
       removeTab(targetName) {
         let tabs = this.editableTabs;
         let activeName = this.areaForm.confirmArea;

@@ -36,6 +36,16 @@
         </el-table-column>
 
         <el-table-column
+          prop="type"
+          label="Methodology"
+        >
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.type == '1' ">Qualitative</el-tag>
+            <el-tag v-else type="success">Quantitative</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
           prop="create_time"
           sortable
           min-width="100px"
@@ -44,17 +54,15 @@
 
         <el-table-column
           prop=""
-          label="Action"
-          style="text-align: center;"
+          label="Add other methodology"
+          min-width="120px"
         >
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="addOtherMethodologyBtn(scope.$index, scope.row)"
-
-              type="text">
-              Add other
-              <br /><br />
-              methodology
+              type="primary"
+              size="small">
+               Add
             </el-button>
 
           </template>
@@ -63,26 +71,27 @@
         <el-table-column
           prop=""
           label="Action"
+          min-width="160px"
           style="text-align: center;"
         >
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="editQuota(scope.$index, scope.row)"
-              type="text">
+              size="small">
               Edit
             </el-button>
 
             <el-button
               @click.native.prevent="submitQuota(scope.$index, scope.row)"
-              style="color: #E79627;"
-              type="text">
-              Submit
+              size="small"
+              type="warning">
+              Preview
             </el-button>
 
             <el-button
               @click.native.prevent="deleteQuota(scope.$index, scope.row)"
-              style="color: red;"
-              type="text">
+              size="small"
+              type="danger">
               Delete
             </el-button>
 
@@ -115,36 +124,29 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogMethodology = false">Cancel</el-button>
-        <el-button type="primary" @click="changeMethodologyType">Confirm</el-button>
+        <el-button type="primary" @click="addMethodologyType">Confirm</el-button>
       </div>
+
     </el-dialog>
 
 <!--    添加另外一种方式-->
-    <el-dialog title="Methodology Type" :visible.sync="dialogMethodology3" width="30%">
+    <el-dialog title="Methodology" :visible.sync="dialogMethodology2" width="30%">
 
-      <el-radio-group v-model="addOtherMethodology" style="font-size: 18px;">
-        <el-radio label="Qualitative" class="addOtherMethRadio1" :disabled="addOtherMethRadioStatus1"></el-radio>
-        <el-radio label="Quantitative" class="addOtherMethRadio2" :disabled="addOtherMethRadioStatus2"></el-radio>
-      </el-radio-group>
-
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogMethodology3 = false">Cancel</el-button>
-        <el-button type="primary" @click="addOtherMeth">Confirm</el-button>
-      </div>
-    </el-dialog>
-<!--    编辑项目选择定性定量-->
-    <el-dialog title="Methodology Type" :visible.sync="dialogMethodology2" width="30%">
-
-      <el-radio-group v-model="edit_methodologyType" style="font-size: 18px;">
-        <el-radio label="Qualitative" :disabled="edit_methodologyRadioStatus1"></el-radio>
-        <el-radio label="Quantitative" :disabled="edit_methodologyRadioStatus2"></el-radio>
-      </el-radio-group>
+      <el-select v-model="edit_methodologyVal" placeholder="请选择">
+        <el-option
+          v-for="item in checkedMethodology"
+          :key="item.id"
+          :label="item.methodology"
+          :value="item.id">
+        </el-option>
+      </el-select>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogMethodology2 = false">Cancel</el-button>
-        <el-button type="primary" @click="edit_methodology">Confirm</el-button>
+        <el-button type="primary" @click="editMeth">Confirm</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
@@ -156,6 +158,8 @@
   import { quotaList } from '@/api/quota'
   import { delEnquiry } from '@/api/quota'
   import { addEnquiry } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
+
   import { getMeth } from '@/api/quota'
   import { ration } from '@/api/quota'
 
@@ -164,6 +168,7 @@
   export default {
     data() {
       return {
+        // 表单
         tableDataBegin: [],
         tableDataName: "",
         tableDataEnd: [],
@@ -171,20 +176,19 @@
         pageSize: 5,
         totalItems: 1,
         filterTableDataEnd:[],
+
+        // 提示
         flag:false,
+
+        // 弹窗框
         dialogMethodology:false,
         dialogMethodology2:false,
         dialogMethodology3:false,
-        addOtherMethodology:'',
-        addOtherMethRadioStatus1:false,
-        addOtherMethRadioStatus2:false,
 
-        methodologyType:'Qualitative',
-        edit_methodologyType:'Qualitative',
-        edit_methodologyRadioStatus1:false,
-        edit_methodologyRadioStatus2:false,
+        methodologyType:'',
+        checkedMethodology:[],
+        edit_methodologyVal:'',
 
-        projectMeth:'',
       }
     },
     components: {
@@ -192,13 +196,14 @@
       Remindtext
     },
     created() {
+      this.init();
       this.tableStart();
     },
     mounted(){
       this.Openpermission('1');
       this.costboxShow();
-
     },
+
     computed: {
       ...mapGetters([
         'user_id',
@@ -208,6 +213,12 @@
     },
 
     methods:{
+      // 页面初始化
+      init(){
+        this.$cookie.delCookie('project_methodologyType');
+        this.$cookie.delCookie('methodology_id');
+        this.$cookie.delCookie('project_number');
+      },
       // 表格初始化
       tableStart(){
         quotaList(this.user_id).then(response => {
@@ -232,15 +243,6 @@
       costboxShow(){
         $('.cost-box').css('display','none');
         $('.remove-cost-box').css('display','none');
-      },
-      getmeth(number){
-        getMeth(number).then(response => {
-           if (response.code == '1'){
-             this.projectMeth =  response.data;
-           }
-        }).catch(() => {
-          this.loading = false;
-        });
       },
       Openpermission(code){
         if(code == '1'){
@@ -299,9 +301,10 @@
         //页面初始化数据需要判断是否检索过
         this.flag=true
       },
-      changeMethodologyType(){
+
+      // 添加项目
+      addMethodologyType(){
         this.dialogMethodology=false;
-        console.log(this.methodologyType);
         var type="";
         if (this.methodologyType == 'Qualitative'){
           type='1';
@@ -328,103 +331,72 @@
 
       },
 
+      // 添加Methodology
       addOtherMethodologyBtn(index,row){
+        this.$cookie.setCookie('project_number',row.number,'1');
+        this.$cookie.setCookie('project_methodologyType',row.type,'1');
+        this.$cookie.delCookie('methodology_id');
+
         this.$router.push({
           name: 'set-methodology',  // 路由的名称
           query: {
           }
         })
-        // this.dialogMethodology3=true;
-        // this.$cookie.setCookie('project_number',row.number,'1');
-        // this.$cookie.delCookie('project_methodologyType');
-        // var pnumber = row.number;
-        // this.addOtherMethRadioStatus1 =false;
-        // this.addOtherMethRadioStatus2 =false;
-        // getMeth(pnumber).then(response => {
-        //   if (response.code == '1'){
-        //         if (response.data == '1'){
-        //               this.addOtherMethRadioStatus1 =true;
-        //               this.addOtherMethodology ='Quantitative';
-        //         }else if(response.data == '2'){
-        //               this.addOtherMethRadioStatus2=true;
-        //               this.addOtherMethodology ='Qualitative';
-        //         }else if(response.data == '3'){
-        //           this.addOtherMethRadioStatus1 =true;
-        //           this.addOtherMethRadioStatus2=true;
-        //         }
-        //   }
-        // }).catch(() => {
-        //   this.loading = false;
-        // });
-
-      },
-      addOtherMeth(){
-        var pnumber2 = this.$cookie.getCookie('project_number');
-        ration(pnumber2).then(response => {
-          if (response.code == '1'){
-            this.$router.push({
-              name: 'set-project-market',  // 路由的名称
-              query: {
-              }
-            })
-          }
-        }).catch(() => {
-          this.loading = false;
-        });
-
       },
 
+      // 修改Methodology内容
       editQuota(index,row){
         // console.log(index);
         // console.log(row.id);
         // console.log(row.number);
         // console.log(this.user_id);
+        this.checkedMethodology="";
+        this.edit_methodologyVal="";
         this.dialogMethodology2=true;
         this.$cookie.setCookie('project_number',row.number,'1');
-        this.$cookie.delCookie('project_methodologyType');
-        var pnumber3 = row.number;
-        this.edit_methodologyRadioStatus1 =false;
-        this.edit_methodologyRadioStatus2 =false;
-        this.edit_methodologyType = ''
-        getMeth(pnumber3).then(response => {
-          console.log(response);
-          if (response.code == '1'){
-            if (response.data == '1'){
-              this.edit_methodologyRadioStatus2 =true;
-              this.edit_methodologyType = 'Qualitative'
-            }else if(response.data == '2'){
-              this.edit_methodologyRadioStatus1 =true;
-              this.edit_methodologyType = 'Quantitative'
-            }else if(response.data == '3'){
-              this.edit_methodologyRadioStatus1 =false;
-              this.edit_methodologyRadioStatus2 =false;
-            }
+        this.$cookie.setCookie('project_methodologyType',row.type,'1');
+        this.$cookie.delCookie('methodology_id');
+
+        // 获取项目信息
+        projectInformation(row.number).then(response => {
+          if(response.code == '1'){
+
+            // 初始化methodology选项
+            this.checkedMethodology=response.data.method;
+            console.log(this.checkedMethodology);
           }
         }).catch(() => {
-          this.loading = false;
+          this.loading = false
         });
 
 
+
       },
-      edit_methodology(){
-        var type="";
-        if (this.edit_methodologyType == 'Qualitative'){
-          type='1';
-        }else if(this.edit_methodologyType == 'Quantitative'){
-          type="2"
+
+      editMeth(){
+        if(this.edit_methodologyVal == ''){
+          this.$message({
+            type: 'warning',
+            message: 'Please Select Methodology!'
+          });
+        }else{
+          this.$cookie.setCookie('methodology_id',this.edit_methodologyVal,'1');
+          this.$router.push({
+            name: 'set-methodology',  // 路由的名称
+            query: {
+            }
+          })
         }
-        this.$cookie.setCookie('project_methodologyType',type,'1');
-
-        this.$router.push({
-          name: 'set-quote-background',  // 路由的名称
-          query: {
-          }
-        })
 
       },
+
+
+      // 提交项目
       submitQuota(){
 
       },
+
+      // 删除项目
       deleteQuota(index,row){
         var msg = "Are you sure to delete"+'" '+row.number+' "';
         return this.$confirm(msg, '', {
@@ -455,9 +427,7 @@
         })
 
       },
-      previewQuota(){
 
-      },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
         this.pageSize = val;

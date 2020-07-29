@@ -109,7 +109,7 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import Step from '@/components/Step'
-  import { createFieldwork } from '@/api/quota'
+  import { quantitativeAdditional } from '@/api/quota'
 
 
 
@@ -123,8 +123,16 @@
             scopeList:[{
               methodology:'CAPI',
               additionalServices:[],
+
+              designQuestionnaire_input:0,
+              programming_input:0,
+              dataSpss_input:0,
+              analysis_input:0,
+              topline_input:0,
+              fullReport_input:0,
+
               additionalServicesTranslation:'',
-              additionalServicesCross:'',
+              additionalServicesCross:'2',
               additionalServicesOther:'',
               managementFee:'',
               requirementsNotes:'',
@@ -429,44 +437,42 @@
         var index = this.scopeList.indexOf(item);
         this.scopeList.splice(index);
       },
-      addMethodology(){
-        console.log(typeof(this.scopeList));
-
-        this.scopeList.push(
-          {
-            methodology: '',
-            fieldworkCost: '',
-            fieldworkCostArr: [{
-              typeRespondents: '',
-              specificRecruiting: '',
-
-              IR: '',
-              lengthSurvey: '',
-              sampleSize: '',
-              targetType: '',
-
-            }],
-            additionalServices:[],
-            additionalServicesTranslation:'',
-            additionalServicesCross:'',
-            additionalServicesOther:'',
-            managementFee:'',
-            requirementsNotes:'',
-          }
-        );
-        // let arr = Array.from(this.scopeList);
-        //console.log(this.scopeList);
-
-      },
       submit(){
         // console.log(this.scopeList);
         var met_id = this.$cookie.getCookie('methodology_id');
         var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
         // console.log(this.scopeList[0].fieldworkCostArr);
+
+        // designQuestionnaire_input:'',
+        //   programming_input:'',
+        //   dataSpss_input:'',
+        //   analysis_input:'',
+        //   topline_input:'',
+        //   fullReport_input:'',
+
+        if(this.scopeList[0].additionalServices.includes('Design of Questionnaire')){
+          this.scopeList[0].designQuestionnaire_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Programming & Hosting')){
+          this.scopeList[0].programming_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Data preparation / Data in Excel or SPSS')){
+          this.scopeList[0].dataSpss_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Advanced Analysis  (e.g. segmentation, conjoint analysis, MaxDiff, etc.)')){
+          this.scopeList[0].analysis_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Topline report')){
+          this.scopeList[0].topline_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Full report')){
+          this.scopeList[0].fullReport_input =1;
+        }
+
         var jsonRes = JSON.stringify( this.scopeList[0] );
         console.log(jsonRes);
 
-        createFieldwork(met_id,this.activeName,jsonRes).then(response => {
+        quantitativeAdditional(met_id,this.activeName,jsonRes).then(response => {
           if (response.code == '1'){
             console.log(response);
           }

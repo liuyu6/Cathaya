@@ -82,6 +82,7 @@
   import $ from 'jquery'
   import Step from '@/components/Step'
   import { addCountry } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
 
 
   export default {
@@ -90,23 +91,13 @@
       return {
         methodology_type:'',
         areaForm: {
-          confirmArea:['Taiwan','Japan'],
+          confirmArea:[],
           othersArea:'',
         },
       }
     },
     created(){
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-      this.methodology_type = this.$cookie.getCookie('project_methodologyType');
+      this.init();
     },
     components: {
       Breadcrumb,
@@ -114,40 +105,77 @@
       Step
     },
     mounted(){
-      $('#step').step({
-        index:'2',
-        stepDirection:'x',
-        showStepButton:true,
-        stepCount:6,
-        type:this.methodology_type,
-        stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
-      })
+      setTimeout(() => {
+        $('#step').step({
+          index:'2',
+          stepDirection:'x',
+          showStepButton:true,
+          stepCount:6,
+          type:this.methodology_type,
+          stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
+        })
+      }, 1000)
+
     },
     methods:{
+      // 页面初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
 
+        if (projectNumber == null || met_id == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+          // 页面初始化
+          projectInformation(projectNumber).then(response => {
+            if(response.code == '1'){
+              console.log(response);
+              this.methodology_type=response.data.type;
+              console.log(this.methodology_type);
+              var arr = response.data.method;
+              for(var i=0;i<arr.length;i++){
+                if (met_id == arr[i].id){
+                  this.areaForm.confirmArea=arr[i].country.split(',');
+                  this.areaForm.othersArea=arr[i].other_country;
+                }
+              }
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+        }
+      },
       handleothersArea(value){
         var arr = value.split(',');
         var arr2 = this.areaForm.confirmArea;
       },
       saveProjectMarket(){
         var marketArr = Array.from(this.areaForm.confirmArea);
+        console.log(marketArr.length);
+        // return false;
 
-        if(this.areaForm.othersArea !=''){
-          var otherAreaArr = this.areaForm.othersArea.split(',');
-          for (var i=0;i<otherAreaArr.length;i++){
-            marketArr.push(otherAreaArr[i]);
-          }
-        }
-        if(marketArr.length<1){
+        if(marketArr.length < 1 && this.areaForm.othersArea == ''){
           this.$alert('Please select the project market.', '', {
             confirmButtonText: 'confirm',
           });
+          return false;
         }else{
 
           var met_id = this.$cookie.getCookie('methodology_id');
           var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
-          var marketArr2 = marketArr.join(',')
-          addCountry(met_id,marketArr2).then(response => {
+          var marketArr2 = marketArr.join(',');
+          var otherCity = this.areaForm.othersArea
+          console.log(met_id);
+          console.log(this.areaForm.othersArea);
+          console.log(marketArr2);
+          // return  false;
+          addCountry(met_id,otherCity,marketArr2).then(response => {
             if (response.code == '1'){
                 // console.log(response);
                 if(project_methodologyType == '1'){
