@@ -44,7 +44,7 @@
                           </el-checkbox>
                         </div>
                         <div style="margin-bottom: 10px;">
-                          <el-checkbox  label="Advanced Analysis  (e.g. segmentation, conjoint analysis, MaxDiff, etc.)" border></el-checkbox>
+                          <el-checkbox  label="Advanced Analysis (e.g. segmentation/conjoint analysis/MaxDiff/etc.)" border></el-checkbox>
                         </div>
                         <div style="margin-bottom: 10px;">
                           <el-checkbox  label="Topline report" border></el-checkbox>
@@ -110,6 +110,7 @@
   import $ from 'jquery'
   import Step from '@/components/Step'
   import { quantitativeAdditional } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
 
 
 
@@ -118,10 +119,10 @@
     data(){
       return{
         btn_remind:false,
-        activeName:'China（mainland）',
+        activeName:'',
+        remarkActiveName:1,
 
-            scopeList:[{
-              methodology:'CAPI',
+        scopeList:[{
               additionalServices:[],
 
               designQuestionnaire_input:0,
@@ -132,29 +133,13 @@
               fullReport_input:0,
 
               additionalServicesTranslation:'',
-              additionalServicesCross:'2',
+              additionalServicesCross:'',
               additionalServicesOther:'',
               managementFee:'',
               requirementsNotes:'',
 
             }],
-        areaScope: [
-          {
-            title:'China（mainland）',
-            name:'China（mainland）',
-            content:'China（mainland）'
-          },
-          {
-            title:'Taiwan',
-            name:'Taiwan',
-            content:'Taiwan'
-          },
-          {
-            title:'Japan',
-            name:'Japan',
-            content:'Japan'
-          }
-        ],
+        areaScope: [],
 
       }
   },
@@ -164,35 +149,8 @@
       Step
     },
     created(){
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
-
-      // 获取项目类型然后跳转到对应页面
-      // var projectMeth = this.$cookie.getCookie('project_methodologyType');
-      // if (projectMeth == '1'){
-      //   this.$router.push({
-      //     name: 'set-qualitative-methodology',  // 路由的名称
-      //     query: {
-      //     }
-      //   });
-      //   return false;
-      // }
-      // if (projectMeth == '2'){
-      //   this.$router.push({
-      //     name: 'set-quantitative-methodology',  // 路由的名称
-      //     query: {
-      //     }
-      //   });
-      //   return false;
-      // }
+      this.init();
+      this.areaContent();
 
     },
     mounted(){
@@ -204,9 +162,121 @@
         type:'2',
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
-      this.activeName='China（mainland）';
+
     },
     methods:{
+      // 页面初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+
+          // 获取项目类型然后跳转到对应页面
+          var projectMeth = this.$cookie.getCookie('project_methodologyType');
+
+          if (projectMeth == '1'){
+            this.$router.push({
+              name: 'set-qualitative-additional',  // 路由的名称
+              query: {
+              }
+            });
+            return false;
+          }else{
+            // 页面初始化
+            projectInformation(projectNumber).then(response => {
+              if(response.code == '1'){
+
+                var arr = response.data.method;
+                var areaScopeArr = '';
+                for(var i=0;i<arr.length;i++){
+                  if(arr[i].id == met_id){
+                    this.methodology = arr[i].methodology;
+                    if(arr[i].other_country == null ){
+                      areaScopeArr = arr[i].country.split(',');
+                    }else{
+                      var str = arr[i].country+','+arr[i].other_country;
+                      areaScopeArr = str.split(',');
+                    }
+                    // 选中地区初始化
+                    for (var j=0;j<areaScopeArr.length;j++){
+                      this.areaScope.push({
+                        'title':areaScopeArr[j],
+                        'name':areaScopeArr[j],
+                        'content':areaScopeArr[j]
+                      });
+                    }
+                    this.activeName = this.areaScope[0].title;
+
+                  }
+                }
+              }
+            }).catch(() => {
+              this.loading = false
+            });
+          }
+        }
+      },
+      loading(){
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        setTimeout(() => {
+          loading.close();
+        }, 2000);
+      },
+
+      // 地区内容初始化
+      areaContent(val){
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+
+        projectInformation(projectNumber).then(response => {
+          if(response.code == '1'){
+            var arr = response.data.method;
+            var requiredArr= '';
+            var countrys= '';
+            for(var i=0;i<arr.length;i++){
+              if(arr[i].id == met_id){
+                requiredArr = arr[i].required;
+                // countrys = arr[i].countrys;
+              }
+            }
+            // console.log(requiredArr);
+            // var filedArray=countrys[this.activeName];
+            // var interviewNum = '';
+            // for (var j = 0;j<filedArray.length;j++){
+            //   interviewNum=Number(interviewNum)+Number(filedArray[j].sample_size);
+            // }
+            // console.log(interviewNum);
+            for(var k = 0; k<requiredArr.length;k++){
+              if(this.activeName == requiredArr[k].country){
+                this.scopeList[0].additionalServices=requiredArr[k].options.split(',');
+
+                this.scopeList[0].additionalServicesTranslation=requiredArr[k].translation
+                this.scopeList[0].additionalServicesCross=requiredArr[k].cross_tabulation
+                this.scopeList[0].additionalServicesOther=requiredArr[k].other_services
+                this.scopeList[0].managementFee=requiredArr[k].project_setup
+                this.scopeList[0].requirementsNotes=requiredArr[k].special
+              }
+            }
+
+
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+      },
       removeTab(targetName) {
         let tabs = this.editableTabs;
         let activeName = this.areaForm.confirmArea;
@@ -234,91 +304,48 @@
         // console.log(tab.name);
       },
       beforeLeaveTab(){
-        console.log(this.areaScope);
-        console.log(this.activeName);
-        if (this.areaScope.length == '1'){
-          return  false;
-        }
-        if(!this.activeName){
-          this.activeName = true;
-          return true;
-        }
-
-        return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '切换成功！可以做一些其他的事情'
+        // console.log(this.areaScope);
+        // console.log(this.activeName);
+        // if (this.areaScope.length == '1'){
+        //   return  false;
+        // }
+        // if(!this.activeName){
+        //   this.activeName = true;
+        //   return true;
+        // }
+        if(this.remarkActiveName == 1){
+          this.remarkActiveName+=1;
+        }else if(this.remarkActiveName == 2){
+          this.remarkActiveName+=1;
+        }else if(this.remarkActiveName >2){
+          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.loading();
+            this.scopeList[0].additionalServices=[];
+            this.scopeList[0].additionalServicesTranslation='';
+            this.scopeList[0].additionalServicesCross='';
+            this.scopeList[0].additionalServicesOther='';
+            this.scopeList[0].managementFee='';
+            this.scopeList[0].requirementsNotes='';
+            this.areaContent();
+            this.$message({
+              type: 'success',
+              message: '切换成功！可以做一些其他的事情'
+            });
+          }).catch(() => {
+            this.$message({
+              type: 'success',
+              message: '取消成功！可以做一些其他的事情'
+            });
+            throw new Error("取消成功！");
           });
-        }).catch(() => {
-          this.$message({
-            type: 'success',
-            message: '取消成功！可以做一些其他的事情'
-          });
-          throw new Error("取消成功！");
-        });
-      },
-      changeMethodology(item) {
-        var index = this.scopeList.indexOf(item);
-        this.scopeList[index].fieldworkCostArr.length=0;
-        this.scopeList[index].fieldworkCost=false;
-
-        var val =item.methodology;
-        // console.log(val);
-        var itemDiv =  $('.scope-content')[index];
-
-        if(val == 'Other'){
-          $(itemDiv).find('.scope-service').css('display','none');
-          $(itemDiv).find('.hr').css('display','none');
-        }else{
-          $(itemDiv).find('.scope-service').css('display','block');
-          $(itemDiv).find('.hr').css('display','block');
-        }
-
-        for (var i = 0; i<this.scopeList.length;i++){
-          if(this.scopeList[i].methodology == 'Other' ){
-            this.btn_remind=true;
-            return false;
-          }else{
-            this.btn_remind=false;
-            return false;
-            // $('.save-btn-remind').css('display','none');
-          }
-          // console.log(this.scopeList[i].methodology);
-        }
-
-
-      },
-
-      changeFieldwork(item) {
-
-        var index = this.scopeList.indexOf(item);
-        var checkVal = this.scopeList[index].fieldworkCost
-        var scopeBox = $('.scope-content')[index];
-
-        if(checkVal){
-          $(scopeBox).find('.add-cost-content').css('display','block');
-          this.scopeList[index].fieldworkCostArr.length=0;
-          this.scopeList[index].fieldworkCostArr.push(
-            {
-              typeRespondents: '',
-              specificRecruiting: '',
-
-              IR: '',
-              lengthSurvey: '',
-              sampleSize: '',
-              targetType: '',
-            }
-          );
-        }else{
-          $(scopeBox).find('.add-cost-content').css('display','none');
-          this.scopeList[index].fieldworkCostArr.length=0;
         }
 
       },
+
       changeAdditionalServices(item){
 
           var arr = item.additionalServices;
@@ -408,35 +435,6 @@
 
 
       },
-      addCostContent(item){
-        var index = this.scopeList.indexOf(item);
-        this.scopeList[index].fieldworkCostArr.push(
-          {
-            typeRespondents: '',
-            specificRecruiting: '',
-
-            IR: '',
-            lengthSurvey: '',
-            sampleSize: '',
-            targetType: '',
-          }
-        );
-
-      },
-      removeCostContent(item1,item2){
-        // this.costlist.splice(1);  //删除index为i,位置的数组元素
-        var index1 = this.scopeList.indexOf(item1);
-        var index2 = this.scopeList[index1].fieldworkCostArr.indexOf(item2);
-        // console.log(index1);
-        // console.log(index2);
-        this.scopeList[index1].fieldworkCostArr.splice(index2);
-
-      },
-      removeScopeContent(item){
-        // this.scopeList.splice(this.key);  //删除index为i,位置的数组元素
-        var index = this.scopeList.indexOf(item);
-        this.scopeList.splice(index);
-      },
       submit(){
         // console.log(this.scopeList);
         var met_id = this.$cookie.getCookie('methodology_id');
@@ -474,7 +472,30 @@
 
         quantitativeAdditional(met_id,this.activeName,jsonRes).then(response => {
           if (response.code == '1'){
-            console.log(response);
+            return this.$confirm('Save success!', '', {
+              confirmButtonText: 'Edit other markets',
+              cancelButtonText: 'Next',
+              type: 'success'
+            }).then(() => {
+
+              this.$message({
+                type: 'info',
+                message: 'Please choose another market'
+              });
+            }).catch(() => {
+              this.$router.push({
+                name: 'project-review',  // 路由的名称
+              })
+            });
+            // if(project_methodologyType == '1'){
+            //   this.$router.push({
+            //     name: 'set-qualitative-additional',  // 路由的名称
+            //   })
+            // }else if(project_methodologyType == '2'){
+            //   this.$router.push({
+            //     name: 'set-quantitative-additional',  // 路由的名称
+            //   })
+            // }
           }
         }).catch(() => {
           this.loading = false

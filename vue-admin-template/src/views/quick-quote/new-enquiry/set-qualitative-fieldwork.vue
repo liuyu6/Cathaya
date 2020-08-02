@@ -203,45 +203,31 @@
     name: 'set-project-fieldwork',
     data(){
       return{
-        methodology_type:'',
+        methodology:'',
         btn_remind:false,
-        activeName:'China（mainland）',
+        activeName:'',
+        remarkActiveName:1,
         scopeList:[{
               fieldworkCost: '',
-              fieldworkCostArr: [{
-                typeRespondents: '',
-                specificRecruiting: '',
-
-                one_IR: '',
-                one_lengthInterview: '',
-                one_sampleSize: '',
-                one_targetType: '',
-
-                group_IR: '',
-                group_lengthInterview: '',
-                group_numberRespondentsGroup: '',
-                group_numberGroupsTotal: '',
-                group_targetType: '',
-
-              }],
+              fieldworkCostArr:[]
+              // fieldworkCostArr: [{
+              //   typeRespondents: '',
+              //   specificRecruiting: '',
+              //
+              //   one_IR: '',
+              //   one_lengthInterview: '',
+              //   one_sampleSize: '',
+              //   one_targetType: '',
+              //
+              //   group_IR: '',
+              //   group_lengthInterview: '',
+              //   group_numberRespondentsGroup: '',
+              //   group_numberGroupsTotal: '',
+              //   group_targetType: '',
+              //
+              // }],
             }],
-        areaScope: [
-          {
-            title:'China（mainland）',
-            name:'China（mainland）',
-            content:'China（mainland）'
-          },
-          {
-            title:'Taiwan',
-            name:'Taiwan',
-            content:'Taiwan'
-          },
-          {
-            title:'Japan',
-            name:'Japan',
-            content:'Japan'
-          }
-        ],
+        areaScope: [],
 
       }
   },
@@ -250,9 +236,10 @@
       Remindtext,
       Step
     },
+
     created(){
       this.init();
-
+      this.areaContent();
     },
     mounted(){
       $('#step').step({
@@ -260,10 +247,50 @@
         stepDirection:'x',
         showStepButton:true,
         stepCount:6,
-        type:this.methodology_type,
+        type:'1',
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
-      this.activeName='China（mainland）';
+      // this.activeName='China（mainland）';
+      this.loading();
+      setTimeout(() => {
+        for(var k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
+          var res = this.scopeList[0].fieldworkCostArr[k].typeRespondents;
+          var mVal =  this.methodology;
+
+          var scopeItem = $('.scope-content')[0];
+          var s1_item = $(scopeItem).find('.cost-box-s1')[k];
+          var s2_item = $(scopeItem).find('.cost-box-s2')[k];
+          console.log(mVal);
+          console.log(res);
+          console.log(k);
+          // console.log(s2_item);
+          if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
+            $(s1_item).css('display','block');
+            $(s2_item).css('display','none');
+            if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+              $(s1_item).find('.oneIR').css('display','block');
+              $(s1_item).find('.oneTargetType').css('display','none');
+            }else{
+              $(s1_item).find('.oneIR').css('display','none');
+              $(s1_item).find('.oneTargetType').css('display','block');
+            }
+          }
+
+          if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
+            $(s1_item).css('display','none');
+            $(s2_item).css('display','block');
+            if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+              $(s2_item).find('.groupIR').css('display','block');
+              $(s2_item).find('.groupTargetType').css('display','none');
+            }else{
+              $(s2_item).find('.groupIR').css('display','none');
+              $(s2_item).find('.groupTargetType').css('display','block');
+            }
+          }
+        }
+      }, 2500);
+
+
     },
     methods:{
       // 页面初始化
@@ -282,9 +309,8 @@
 
           // 获取项目类型然后跳转到对应页面
           var projectMeth = this.$cookie.getCookie('project_methodologyType');
-          var met_id = this.$cookie.getCookie('methodology_id');
 
-          if (projectMeth == '2'){
+          if (projectMeth == '2' || met_id == null){
             this.$router.push({
               name: 'set-quantitative-fieldwork',  // 路由的名称
               query: {
@@ -293,25 +319,136 @@
             return false;
           }else{
             // 页面初始化
-              projectInformation(projectNumber).then(response => {
+            projectInformation(projectNumber).then(response => {
               if(response.code == '1'){
                 console.log(response);
                 var arr = response.data.method;
-                this.methodology_type=response.data.type;
-                // for(var i=0;i<arr.length;i++){
-                //     if(arr[i].id == met_id){
-                //       this.areaScope[i
-                //     }
-                // }
+                var areaScopeArr = '';
+                for(var i=0;i<arr.length;i++){
+                  if(arr[i].id == met_id){
+                    this.methodology = arr[i].methodology;
+                    if(arr[i].other_country == null ){
+                      areaScopeArr = arr[i].country.split(',');
+                    }else{
+                      var str = arr[i].country+','+arr[i].other_country;
+                      areaScopeArr = str.split(',');
+                    }
+                    // 选中地区初始化
+                    for (var j=0;j<areaScopeArr.length;j++){
+                      this.areaScope.push({
+                        'title':areaScopeArr[j],
+                        'name':areaScopeArr[j],
+                        'content':areaScopeArr[j]
+                      });
+                    }
+                    this.activeName = this.areaScope[0].title;
+
+                  }
+                }
               }
             }).catch(() => {
               this.loading = false
             });
           }
-
-
         }
       },
+      loading(){
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        setTimeout(() => {
+          loading.close();
+        }, 2000);
+      },
+
+      // 地区内容初始化
+      areaContent(val){
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+
+        projectInformation(projectNumber).then(response => {
+          if(response.code == '1'){
+            var arr = response.data.method;
+            var countrys= '';
+            for(var i=0;i<arr.length;i++){
+              if(arr[i].id == met_id){
+                countrys = arr[i].countrys;
+              }
+            }
+            var filedArray=countrys[this.activeName];
+            // 初始化fieldWork
+            console.log(countrys[this.activeName]);
+            if(filedArray.length == 0){
+              this.scopeList[0].fieldworkCost=false;
+              $('.add-cost-content').css('display','none');
+            }else{
+              this.scopeList[0].fieldworkCost=true;
+              $('.add-cost-content').css('display','block');
+            }
+            for (var j = 0;j<filedArray.length;j++){
+              this.scopeList[0].fieldworkCostArr.push({
+                'typeRespondents':filedArray[j].respondents,
+                'specificRecruiting':filedArray[j].criteria,
+                'one_IR':filedArray[j].difficulty,
+                'one_lengthInterview':filedArray[j].interview,
+                'one_sampleSize':filedArray[j].size,
+                'one_targetType':filedArray[j].target_practitioners,
+                'group_IR':filedArray[j].estimated_ir,
+                'group_lengthInterview':filedArray[j].length_interview,
+                'group_numberRespondentsGroup':filedArray[j].respondents_number,
+                'group_numberGroupsTotal':filedArray[j].number_groups,
+                'group_targetType':filedArray[j].target
+              })
+            }
+
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+      },
+
+      filedInit(){
+        // 初始化fieldWork
+        for(var k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
+          var res = this.scopeList[0].fieldworkCostArr[k].typeRespondents;
+          var mVal =  this.methodology;
+
+          var scopeItem = $('.scope-content')[0];
+          var s1_item = $(scopeItem).find('.cost-box-s1')[k];
+          var s2_item = $(scopeItem).find('.cost-box-s2')[k];
+          console.log(mVal);
+          console.log(res);
+          console.log(k);
+          // console.log(s2_item);
+          if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
+            $(s1_item).css('display','block');
+            $(s2_item).css('display','none');
+            if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+              $(s1_item).find('.oneIR').css('display','block');
+              $(s1_item).find('.oneTargetType').css('display','none');
+            }else{
+              $(s1_item).find('.oneIR').css('display','none');
+              $(s1_item).find('.oneTargetType').css('display','block');
+            }
+          }
+
+          if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
+            $(s1_item).css('display','none');
+            $(s2_item).css('display','block');
+            if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+              $(s2_item).find('.groupIR').css('display','block');
+              $(s2_item).find('.groupTargetType').css('display','none');
+            }else{
+              $(s2_item).find('.groupIR').css('display','none');
+              $(s2_item).find('.groupTargetType').css('display','block');
+            }
+          }
+        }
+      },
+
 
       removeTab(targetName) {
         let tabs = this.editableTabs;
@@ -330,42 +467,83 @@
         this.areaForm.confirmArea = activeName;
         this.editableTabs = tabs.filter(tab => tab.name !== targetName);
       },
-      changeHandler(value) {
-        console.log('改变之后的值是:' + value)
-      },
 
       handleCheck(tab,event) {
         var presentRes = this.activeName;
-        // console.log(presentRes);
-        // console.log(tab.name);
+        console.log(this.activeName);
+        this.loading();
+        setTimeout(() => {
+          for(var k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
+            var res = this.scopeList[0].fieldworkCostArr[k].typeRespondents;
+            var mVal =  this.methodology;
+
+            var scopeItem = $('.scope-content')[0];
+            var s1_item = $(scopeItem).find('.cost-box-s1')[k];
+            var s2_item = $(scopeItem).find('.cost-box-s2')[k];
+            console.log(mVal);
+            console.log(res);
+            console.log(k);
+            // console.log(s2_item);
+            if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
+              $(s1_item).css('display','block');
+              $(s2_item).css('display','none');
+              if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+                $(s1_item).find('.oneIR').css('display','block');
+                $(s1_item).find('.oneTargetType').css('display','none');
+              }else{
+                $(s1_item).find('.oneIR').css('display','none');
+                $(s1_item).find('.oneTargetType').css('display','block');
+              }
+            }
+
+            if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
+              $(s1_item).css('display','none');
+              $(s2_item).css('display','block');
+              if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+                $(s2_item).find('.groupIR').css('display','block');
+                $(s2_item).find('.groupTargetType').css('display','none');
+              }else{
+                $(s2_item).find('.groupIR').css('display','none');
+                $(s2_item).find('.groupTargetType').css('display','block');
+              }
+            }
+          }
+        }, 2500);
       },
       beforeLeaveTab(){
-        // console.log(this.areaScope);
-        // console.log(this.isTip);
-        if (this.areaScope.length == '1'){
-          return  false;
-        }
-        if(!this.activeName){
-          this.activeName = true;
-          return true;
-        }
 
-        return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '切换成功！可以做一些其他的事情'
+        // if (this.areaScope.length == '1'){
+        //   return  false;
+        // }
+        // if(!this.activeName){
+        //   this.activeName = true;
+        //   return true;
+        // }
+        if(this.remarkActiveName == 1){
+          this.remarkActiveName+=1;
+        }else if(this.remarkActiveName == 2){
+          this.remarkActiveName+=1;
+        }else if(this.remarkActiveName >2){
+          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.scopeList[0].fieldworkCostArr.length=0;
+            this.areaContent();
+            this.$message({
+              type: 'success',
+              message: '切换成功！可以做一些其他的事情'
+            });
+            console.log(this.activeName);
+          }).catch(() => {
+            this.$message({
+              type: 'success',
+              message: '取消成功！可以做一些其他的事情'
+            });
+            throw new Error("取消成功！");
           });
-        }).catch(() => {
-          this.$message({
-            type: 'success',
-            message: '取消成功！可以做一些其他的事情'
-          });
-          throw new Error("取消成功！");
-        });
+        }
       },
 
       changeFieldword(item) {
@@ -405,33 +583,31 @@
         var index1 = this.scopeList.indexOf(item1);
         var index2 = this.scopeList[index1].fieldworkCostArr.indexOf(item2);
         var res = this.scopeList[index1].fieldworkCostArr[index2].typeRespondents;
-        var mVal = this.scopeList[index1].methodology;
+        var mVal =  this.methodology;
 
         console.log(index1);
         console.log(index2);
-        console.log(mVal);
         console.log(res);
 
         var scopeItem = $('.scope-content')[index1];
         var s1_item = $(scopeItem).find('.cost-box-s1')[index2];
         var s2_item = $(scopeItem).find('.cost-box-s2')[index2];
         // console.log(str);
-
         if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
-             $(s1_item).css('display','block');
-             $(s2_item).css('display','none');
-              if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
-                $(s1_item).find('.oneIR').css('display','block');
-                $(s1_item).find('.oneTargetType').css('display','none');
-              }else{
-                $(s1_item).find('.oneIR').css('display','none');
-                $(s1_item).find('.oneTargetType').css('display','block');
-              }
+          $(s1_item).css('display','block');
+          $(s2_item).css('display','none');
+          if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
+            $(s1_item).find('.oneIR').css('display','block');
+            $(s1_item).find('.oneTargetType').css('display','none');
+          }else{
+            $(s1_item).find('.oneIR').css('display','none');
+            $(s1_item).find('.oneTargetType').css('display','block');
+          }
         }
 
         if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
-            $(s1_item).css('display','none');
-            $(s2_item).css('display','block');
+          $(s1_item).css('display','none');
+          $(s2_item).css('display','block');
           if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
             $(s2_item).find('.groupIR').css('display','block');
             $(s2_item).find('.groupTargetType').css('display','none');
@@ -478,9 +654,25 @@
           // console.log(this.scopeList[0].fieldworkCostArr);
           var jsonRes = JSON.stringify( this.scopeList[0] );
           console.log(jsonRes);
+          console.log(this.activeName);
 
         createFieldwork(met_id,this.activeName,jsonRes).then(response => {
             if (response.code == '1'){
+              return this.$confirm('Save success!', '', {
+                confirmButtonText: 'Edit other markets',
+                cancelButtonText: 'Next',
+                type: 'success'
+              }).then(() => {
+
+                this.$message({
+                  type: 'info',
+                  message: 'Please choose another market'
+                });
+              }).catch(() => {
+                this.$router.push({
+                      name: 'set-qualitative-additional',  // 路由的名称
+                })
+              });
                 // if(project_methodologyType == '1'){
                 //   this.$router.push({
                 //     name: 'set-qualitative-additional',  // 路由的名称

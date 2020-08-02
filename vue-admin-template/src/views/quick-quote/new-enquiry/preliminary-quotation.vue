@@ -2,105 +2,58 @@
   <div class="box">
     <breadcrumb class="breadcrumb-container" />
     <Remindtext  ></Remindtext>
-    <div class="content">
+    <div class="content" style="width: 100%;">
       <h2>Quotation</h2>
-      <p class="project_number">PO : <span id="project_number">LYNK03182020A_rev0</span></p>
-      <p class="project_time">TIME: <span id="project_time">2020.3.18 10:10:30</span></p>
+      <p class="project_number">PO : <span id="project_number" >LYNK03182020A_rev0</span></p>
+      <p class="project_number">Methodology Type: <span id="project_methodologyType" >LYNK03182020A_rev0</span></p>
+      <p class="project_time">Time: <span id="project_time" >2020.3.18 10:10:30</span></p>
 
 <!--      报价单内容-->
       <div class="quotationBox">
-<!--          总价格-->
-          <div class="projectTotal">
-             <span style="font-size: 22px;">Total Project : </span><span id="projectTotal">$5,801.80</span>
-          </div>
-
-<!--        定性-->
           <div >
             <el-table
-              :data="tableData6"
+              :data="tableData"
               :span-method="arraySpanMethod"
               border
+              :header-cell-style="headClass"
               style="width: 100%;">
               <el-table-column
-                prop="id"
-                label="Methodology Type"
-                width="160">
-              </el-table-column>
-              <el-table-column
-                prop="name"
+                prop="market"
                 label="Market">
               </el-table-column>
               <el-table-column
-                prop="amount1"
-                sortable
+                prop="category"
                 min-width="100px"
-                label="Part">
+                label="Service Category">
               </el-table-column>
               <el-table-column
-                prop="amount2"
+                prop="cost_items"
                 min-width="100px"
-                label="The cost includes">
+                label="Cost Items">
               </el-table-column>
               <el-table-column
-                prop="amount3"
-                sortable
+                prop="cpi"
                 label="CPI">
               </el-table-column>
               <el-table-column
-                prop="amount3"
-                sortable
+                prop="subtotal"
                 label="Subtotal">
+              </el-table-column>
+              <el-table-column
+                prop="market_total"
+                style="background-color: #1f2d3d;"
+                label="Market Total">
               </el-table-column>
             </el-table>
           </div>
           <div class="subtotal">
-            <span style="font-size: 22px;">Subtotal： </span><span id="subtotal">$5,801.80</span>
+            <span style="font-size: 22px;">Project Total： </span><span id="subtotal">$<span id="subtotalVal"></span></span>
           </div>
 
-<!--        定量-->
-          <div >
-            <el-table
-              :data="tableData7"
-              :span-method="arraySpanMethod"
-              border
-              style="width: 100%;">
-              <el-table-column
-                prop="id"
-                label="Methodology Type"
-                width="160">
-              </el-table-column>
-              <el-table-column
-                prop="name"
-                label="Market">
-              </el-table-column>
-              <el-table-column
-                prop="amount1"
-                sortable
-                min-width="100px"
-                label="Part">
-              </el-table-column>
-              <el-table-column
-                prop="amount2"
-                min-width="100px"
-                label="The cost includes">
-              </el-table-column>
-              <el-table-column
-                prop="amount3"
-                sortable
-                label="CPI">
-              </el-table-column>
-              <el-table-column
-                prop="amount3"
-                sortable
-                label="Subtotal">
-              </el-table-column>
-            </el-table>
+          <div class="saveBtn" style="margin-top: 30px;">
+            <el-button  style="width: 200px;" @click="edit">Edit</el-button>
+            <el-button type="primary" style="width: 200px;" @click="getQuote">Confirm Quote</el-button>
           </div>
-          <div class="subtotal">
-            <span style="font-size: 22px;">Subtotal： </span><span id="subtotal">$5,801.80</span>
-          </div>
-
-
       </div>
 
     </div>
@@ -114,80 +67,48 @@
   import Remindtext from '@/components/Remindtext'
   import $ from 'jquery'
   import { mapGetters } from 'vuex'
+  import { projectInformation } from '@/api/quota'
+  import { quotation } from '@/api/quota'
 
   export default {
     name: 'preliminary-quotation',
     data(){
       return{
-        form: {
-          project_number:'LYNK03182020A_rev0',
-        },
-        tableData6: [{
-          id: 'Qualitative',
-          name: 'Japan',
-          amount1: 'Fieldwork',
-          amount2: 'xxxxxxxx',
-          amount3: '$1,300.90'
-        }, {
-          id: 'Qualitative',
-          name: 'Japan',
-          amount1: 'Additional Services',
-          amount2: 'The cost includes xxx',
-          amount3: '$300.00'
-        }, {
-          id: 'Qualitative',
-          name: 'Canada',
-          amount1: 'Fieldwork',
-          amount2: 'xxxxxxxx',
-          amount3: '$1,300.90'
-        },{
-          id: 'Qualitative',
-          name: 'Canada',
-          amount1: 'Additional Services',
-          amount2: 'The cost includes xxx',
-          amount3: '$300.00'
-        }],
-        tableData7: [{
-          id: 'Quantitative',
-          name: 'Japan',
-          amount1: 'Fieldwork',
-          amount2: 'xxxxxxxx',
-          amount3: '$1,300.90'
-        }, {
-          id: 'Quantitative',
-          name: 'Japan',
-          amount1: 'Additional Services',
-          amount2: 'The cost includes xxx',
-          amount3: '$300.00'
-        }, {
-          id: 'Quantitative',
-          name: 'Canada',
-          amount1: 'Fieldwork',
-          amount2: 'xxxxxxxx',
-          amount3: '$1,300.90'
-        },{
-          id: 'Quantitative',
-          name: 'Canada',
-          amount1: 'Additional Services',
-          amount2: 'The cost includes xxx',
-          amount3: '$300.00'
-        }],
-
+        tableData:[]
+        // tableData: [{
+        //   market: 'Canada',
+        //   category: 'Fieldwork',
+        //   cost_items: 'xxxxxxxx',
+        //   cpi: '$300.00',
+        //   subtotal:'$2000',
+        //   market_total:'$5000'
+        // },{
+        //   market: 'Canada',
+        //   category: 'Additional Services',
+        //   cost_items: 'xxxxxxxx',
+        //   cpi: '$500.00',
+        //   subtotal:'$3000',
+        //   market_total:'$5000'
+        // },{
+        //   market: 'Japan',
+        //   category: 'Fieldwork',
+        //   cost_items: 'xxxxxxxx',
+        //   cpi: '$600.00',
+        //   subtotal:'$4000',
+        //   market_total:'$7200'
+        // },{
+        //   market: 'Japan',
+        //   category: 'Additional Services',
+        //   cost_items: 'xxxxxxxx',
+        //   cpi: '$800.00',
+        //   subtotal:'$3200',
+        //   market_total:'$7200'
+        // }],
 
       }
     },
     created(){
-
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
+      this.init();
     },
 
     components: {
@@ -201,33 +122,70 @@
       ])
     },
     mounted(){
-      $('#step').step({
-        index:'0',
-        stepDirection:'x',
-        showStepButton:true,
-        stepCount:3,
-        stepTitles:['Set Project Background','Set Project Market','Set Project Methodology'],
-      })
+
     },
     methods:{
-      arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-        console.log(row)
-        console.log(column)
-        console.log('1');
-         if (columnIndex === 0) {
-            if (rowIndex % 4 === 0) {
-              return {
-                rowspan: 4,
-                colspan: 1
-              };
-            } else {
-              return {
-                rowspan: 0,
-                colspan: 0
-              };
+      // 初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
             }
+          });
+          return false;
+        }else{
+          // 项目信息
+          projectInformation(projectNumber).then(response => {
+            if(response.code == '1'){
+              // console.log(response);
+              $('#project_number').text(response.data.number);
+              if(response.data.type == '1'){
+                $('#project_methodologyType').text('Qualitative');
+              }else{
+                $('#project_methodologyType').text('Quantitative');
+              }
+              $('#project_time').text(response.data.create_time);
+
+
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+
+          // 报价单信息
+          quotation(projectNumber).then(response => {
+            if(response.code == '1'){
+              console.log(response);
+              this.tableData=response.data;
+              $('#subtotalVal').text(response.sum);
+            }
+          }).catch(() => {
+            this.loading = false
+          });
+        }
+      },
+      headClass () {
+        return 'background:#328C30;color:#ffffff;'
+      },
+      edit(){
+        this.$router.push({
+          name: 'project-review',  // 路由的名称
+          query: {
           }
-         if (columnIndex === 1) {
+        });
+      },
+      getQuote(){},
+      arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+        // console.log(row)
+        // console.log(rowIndex)
+        // console.log(column)
+        // console.log(columnIndex)
+         if (columnIndex === 0 || columnIndex === 5) {
             if (rowIndex % 2 === 0) {
               return {
                 rowspan: 2,
@@ -241,14 +199,6 @@
             }
           }
 
-        // if (row.id=='12987122') {
-        //   // if (columnIndex === 0) {
-        //   //   return [2, 2];
-        //   // }
-        //   else if (columnIndex === 1) {
-        //     return [0, 0];
-        //   }
-        // }
       },
       objectSpanMethod({ row, column, rowIndex, columnIndex }) {
         if (columnIndex === 0) {
@@ -324,7 +274,7 @@
   .subtotal{
     width: 100%;
     height: 80px;
-    background-color: #E8C154;
+    background-color: #328C30;
     color: #ffffff;
     line-height: 80px;
     font-size: 18px;

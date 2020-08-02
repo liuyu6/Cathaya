@@ -114,8 +114,32 @@ export function projectInformation(number) {
   })
 }
 
+// 删除memodology
+export function deleteMethodology(met_id) {
+  return request({
+    url: '/DeleteMethodology',
+    method: 'get',
+    params: {met_id}
+  })
+}
 
+// 查看报价单
+export function quotation(number) {
+  return request({
+    url: '/Quotation',
+    method: 'get',
+    params: {number}
+  })
+}
 
+// 提交报价单
+export function addInquiry(number) {
+  return request({
+    url: '/AddInquiry',
+    method: 'get',
+    params: {number}
+  })
+}
 // export function getInfo(id) {
 //   return request({
 //     url: '/Basic',

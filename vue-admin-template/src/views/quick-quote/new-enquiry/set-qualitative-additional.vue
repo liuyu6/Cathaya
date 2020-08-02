@@ -144,6 +144,7 @@
   import Step from '@/components/Step'
   import { createAdditional } from '@/api/quota'
   import { projectServices } from '@/api/quota'
+  import { projectInformation } from '@/api/quota'
 
 
 
@@ -152,12 +153,13 @@
     data(){
       return{
         btn_remind:false,
-        activeName:'China（mainland）',
+        activeName:'',
         methodology_type:'',
+        remarkActiveName:1,
+        interviewNum:'',
         scopeList:{
-              methodology:'CAPI',
               additionalServices:[],
-              moderation_input:"",
+              moderation_input:'',
               facility_input:'',
               audio_input:"",
               video_input:'',
@@ -176,23 +178,7 @@
               requirementsNotes:'',
 
             },
-        areaScope: [
-          {
-            title:'China（mainland）',
-            name:'China（mainland）',
-            content:'China（mainland）'
-          },
-          {
-            title:'Taiwan',
-            name:'Taiwan',
-            content:'Taiwan'
-          },
-          {
-            title:'Japan',
-            name:'Japan',
-            content:'Japan'
-          }
-        ],
+        areaScope: [],
 
       }
   },
@@ -202,35 +188,10 @@
       Step
     },
     created(){
-      // cookie中没有项目编号进行跳转
-      var projectNumber = this.$cookie.getCookie('project_number');
-      if (projectNumber == null){
-        this.$router.push({
-          name: 'new-enquiry',  // 路由的名称
-          query: {
-          }
-        });
-        return false;
-      }
 
-      // 获取项目类型然后跳转到对应页面
-      this.methodology_type = this.$cookie.getCookie('project_methodologyType');
-      // if (projectMeth == '1'){
-      //   this.$router.push({
-      //     name: 'set-qualitative-methodology',  // 路由的名称
-      //     query: {
-      //     }
-      //   });
-      //   return false;
-      // }
-      // if (projectMeth == '2'){
-      //   this.$router.push({
-      //     name: 'set-quantitative-methodology',  // 路由的名称
-      //     query: {
-      //     }
-      //   });
-      //   return false;
-      // }
+    this.init();
+    this.loading();
+    this.areaContent();
 
     },
     mounted(){
@@ -239,12 +200,141 @@
         stepDirection:'x',
         showStepButton:true,
         stepCount:6,
-        type:this.methodology_type,
+        type:'1',
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
-      this.activeName='China（mainland）';
     },
     methods:{
+      // 页面初始化
+      init(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+        if (projectNumber == null){
+          this.$router.push({
+            name: 'new-enquiry',  // 路由的名称
+            query: {
+            }
+          });
+          return false;
+        }else{
+
+          // 获取项目类型然后跳转到对应页面
+          var projectMeth = this.$cookie.getCookie('project_methodologyType');
+
+          if (projectMeth == '2'){
+            this.$router.push({
+              name: 'set-quantitative-additional',  // 路由的名称
+              query: {
+              }
+            });
+            return false;
+          }else{
+            // 页面初始化
+            projectInformation(projectNumber).then(response => {
+              if(response.code == '1'){
+
+                var arr = response.data.method;
+                var areaScopeArr = '';
+                for(var i=0;i<arr.length;i++){
+                  if(arr[i].id == met_id){
+                    this.methodology = arr[i].methodology;
+                    if(arr[i].other_country == null ){
+                      areaScopeArr = arr[i].country.split(',');
+                    }else{
+                      var str = arr[i].country+','+arr[i].other_country;
+                      areaScopeArr = str.split(',');
+                    }
+                    // 选中地区初始化
+                    for (var j=0;j<areaScopeArr.length;j++){
+                      this.areaScope.push({
+                        'title':areaScopeArr[j],
+                        'name':areaScopeArr[j],
+                        'content':areaScopeArr[j]
+                      });
+                    }
+                    this.activeName = this.areaScope[0].title;
+
+                  }
+                }
+              }
+            }).catch(() => {
+              this.loading = false
+            });
+          }
+        }
+      },
+      loading(){
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        setTimeout(() => {
+          loading.close();
+        }, 2000);
+      },
+
+      // 地区内容初始化
+      areaContent(val){
+        var projectNumber = this.$cookie.getCookie('project_number');
+        var met_id = this.$cookie.getCookie('methodology_id');
+
+        projectInformation(projectNumber).then(response => {
+          if(response.code == '1'){
+            var arr = response.data.method;
+            var requiredArr= '';
+            var countrys= '';
+            for(var i=0;i<arr.length;i++){
+              if(arr[i].id == met_id){
+                requiredArr = arr[i].required;
+                countrys = arr[i].countrys;
+              }
+            }
+            console.log(requiredArr);
+            var filedArray=countrys[this.activeName];
+            var interviewNum = '';
+            for (var j = 0;j<filedArray.length;j++){
+              interviewNum=Number(interviewNum)+Number(filedArray[j].size);
+            }
+            this.interviewNum = interviewNum;
+
+            for(var k = 0; k<requiredArr.length;k++){
+              if(this.activeName == requiredArr[k].country){
+                this.scopeList.additionalServices=requiredArr[k].options.split(',');
+
+                this.scopeList.moderation_input=requiredArr[k].mode_ration
+                this.scopeList.facility_input=requiredArr[k].facility_rental
+                this.scopeList.audio_input=requiredArr[k].audio_recording
+                this.scopeList.video_input=requiredArr[k].video_recording
+                this.scopeList.translationLocal_input=requiredArr[k].transcript
+                this.scopeList.transEnglish_input=requiredArr[k].transcript_english
+                this.scopeList.simultaneous_input=requiredArr[k].simultaneous
+                this.scopeList.additionalServicesTranslation=requiredArr[k].translation
+                this.scopeList.additionalServicesOther=requiredArr[k].other_services
+
+                this.scopeList.managementFee=requiredArr[k].project_setup
+                this.scopeList.requirementsNotes=requiredArr[k].special
+                // console.log(requiredArr[k].options);
+              }
+            }
+
+            if(this.scopeList.moderation_input == ''){this.scopeList.moderation_input=interviewNum;};
+            if(this.scopeList.facility_input == ''){this.scopeList.facility_input=interviewNum;};
+            if(this.scopeList.audio_input == ''){this.scopeList.audio_input=interviewNum;};
+            if(this.scopeList.video_input == ''){this.scopeList.video_input=interviewNum;};
+            if(this.scopeList.translationLocal_input == ''){this.scopeList.translationLocal_input=interviewNum;};
+            if(this.scopeList.transEnglish_input == ''){this.scopeList.transEnglish_input=interviewNum;};
+            if(this.scopeList.simultaneous_input == ''){this.scopeList.simultaneous_input=interviewNum;};
+
+
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+      },
+
       removeTab(targetName) {
         let tabs = this.editableTabs;
         let activeName = this.areaForm.confirmArea;
@@ -280,23 +370,45 @@
         //   this.activeName = true;
         //   return true;
         // }
+        if(this.remarkActiveName == 1){
+          this.remarkActiveName+=1;
+        }else if(this.remarkActiveName == 2){
+          this.remarkActiveName+=1;
+        }else if(this.remarkActiveName >2){
+          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.loading();
+            this.scopeList.additionalServices=[];
 
-        return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '切换成功！可以做一些其他的事情'
+            this.scopeList.moderation_input='';
+            this.scopeList.facility_input='';
+            this.scopeList.audio_input='';
+            this.scopeList.video_input='';
+            this.scopeList.translationLocal_input='';
+            this.scopeList.transEnglish_input='';
+            this.scopeList.simultaneous_input='';
+            this.scopeList.additionalServicesTranslation='';
+            this.scopeList.additionalServicesOther='';
+
+            this.scopeList.managementFee='';
+            this.scopeList.requirementsNotes='';
+            this.areaContent();
+            this.$message({
+              type: 'success',
+              message: '切换成功！可以做一些其他的事情'
+            });
+          }).catch(() => {
+            this.$message({
+              type: 'success',
+              message: '取消成功！可以做一些其他的事情'
+            });
+            throw new Error("取消成功！");
           });
-        }).catch(() => {
-          this.$message({
-            type: 'success',
-            message: '取消成功！可以做一些其他的事情'
-          });
-          throw new Error("取消成功！");
-        });
+        }
+
       },
 
       changeAdditionalServices(val){
@@ -307,7 +419,7 @@
           // var key3 = $.inArray("Cross", arr );
 
           if(key >= 0){
-              if(scopeList.additionalServicesTranslation=='' ){
+              if(this.scopeList.additionalServicesTranslation=='' ){
 
                   this.$alert('Please fill in the input box.', '', {
                     confirmButtonText: 'confirm',
@@ -339,24 +451,6 @@
           // console.log(item.additionalServices);
 
       },
-      // changeAdditionalTranslationInput(item){
-      //   var arr = item.additionalServices;
-      //   if (item.additionalServicesTranslation == ''){
-      //     arr.splice($.inArray("Translation", arr),1);
-      //   }
-      // },
-      // changeAdditionalCrossInput(item){
-      //   var arr = item.additionalServices;
-      //   if (item.additionalServicesCross == ''){
-      //     arr.splice($.inArray("Cross", arr),1);
-      //   }
-      // },
-      // changeAdditionalOtherInput(item){
-      //   var arr = item.additionalServices;
-      //   if (item.additionalServicesOther == ''){
-      //     arr.splice($.inArray("Other", arr),1);
-      //   }
-      // },
 
       submit(){
         // console.log(this.scopeList);
@@ -384,6 +478,21 @@
 
         createAdditional(met_id,this.activeName,jsonRes).then(response => {
           if (response.code == '1'){
+            return this.$confirm('Save success!', '', {
+              confirmButtonText: 'Edit other markets',
+              cancelButtonText: 'Next',
+              type: 'success'
+            }).then(() => {
+
+              this.$message({
+                type: 'info',
+                message: 'Please choose another market'
+              });
+            }).catch(() => {
+              this.$router.push({
+                name: 'project-review',  // 路由的名称
+              })
+            });
             // if(project_methodologyType == '1'){
             //   this.$router.push({
             //     name: 'set-qualitative-additional',  // 路由的名称

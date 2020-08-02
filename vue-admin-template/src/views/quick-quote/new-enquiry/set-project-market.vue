@@ -104,17 +104,19 @@
       Remindtext,
       Step
     },
+    watch:{
+      // this.methodology_type
+    },
     mounted(){
-      setTimeout(() => {
-        $('#step').step({
-          index:'2',
-          stepDirection:'x',
-          showStepButton:true,
-          stepCount:6,
-          type:this.methodology_type,
-          stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
-        })
-      }, 1000)
+      var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+      $('#step').step({
+        index:'2',
+        stepDirection:'x',
+        showStepButton:true,
+        stepCount:6,
+        type:project_methodologyType,
+        stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
+      })
 
     },
     methods:{

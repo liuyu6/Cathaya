@@ -50,21 +50,6 @@
     },
     created(){
       this.init();
-
-      // this.methodology_type = this.$cookie.getCookie('project_methodologyType');
-      // var med_id = this.$cookie.getCookie('methodology_id');
-      // if(med_id !== null ){
-      //   projectServices(med_id).then(response => {
-      //     if (response.code == '1'){
-      //       console.log(response);
-      //     }
-      //   }).catch(() => {
-      //     this.loading = false
-      //   });
-      // }
-
-
-
     },
 
     components: {

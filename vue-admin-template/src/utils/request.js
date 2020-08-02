@@ -4,8 +4,8 @@ import store from '@/store'
 import { getToken } from '@/utils/auth'
 // create an axios instance
 const service = axios.create({
-  //baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  baseURL: '/api', // url = base url + request url
+  baseURL: 'http://13.230.166.63/laravel/public', // url = base url + request url
+  //baseURL: '/api', // url = base url + request url
   withCredentials: true, // send cookies when cross-domain requests
   headers: {
     // 'Content-Type': 'application/x-www-form-urlencoded'

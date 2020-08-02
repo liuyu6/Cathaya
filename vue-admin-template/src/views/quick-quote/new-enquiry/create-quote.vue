@@ -61,6 +61,7 @@
             <el-button
               @click.native.prevent="addOtherMethodologyBtn(scope.$index, scope.row)"
               type="primary"
+              icon="el-icon-circle-plus-outline"
               size="small">
                Add
             </el-button>
@@ -71,7 +72,7 @@
         <el-table-column
           prop=""
           label="Action"
-          min-width="160px"
+          min-width="170px"
           style="text-align: center;"
         >
           <template slot-scope="scope">
@@ -85,7 +86,7 @@
               @click.native.prevent="submitQuota(scope.$index, scope.row)"
               size="small"
               type="warning">
-              Preview
+              Submit
             </el-button>
 
             <el-button
@@ -392,8 +393,13 @@
 
 
       // 提交项目
-      submitQuota(){
-
+      submitQuota(index,row){
+        this.$cookie.setCookie('project_number',row.number,'1');
+        this.$router.push({
+          name: 'preliminary-quotation',  // 路由的名称
+          query: {
+          }
+        })
       },
 
       // 删除项目
@@ -421,7 +427,6 @@
           }).catch(() => {
             this.loading = false
           })
-
         }).catch(() => {
 
         })
