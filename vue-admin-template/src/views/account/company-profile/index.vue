@@ -11,7 +11,7 @@
             <!--          <div style="float: right;"><i class="el-icon-edit" style="font-size: 20px;"></i></div>-->
 
             <div class="input_box">
-              <div class="input_title">Company Full Legal Name</div>
+              <div class="input_title">Company Name</div>
               <el-input
                 placeholder=""
                 size="medium"
@@ -69,7 +69,7 @@
               <el-input
                 placeholder=""
                 size="medium"
-                v-model="formLabelAlign.contact_phone">
+                v-model="formLabelAlign.contacts_phone">
               </el-input>
             </div>
 
@@ -178,7 +178,7 @@
           contact_department:'',
           job_title:'',
           contact_email:'',
-          contact_phone:'',
+          contacts_phone:'',
           invoice_email:''
 
         },
@@ -211,11 +211,11 @@
             this.formLabelAlign.province = response.data['province'];
             this.formLabelAlign.country = response.data['country'];
             this.formLabelAlign.zip_code = response.data['zip_code'];
-            this.formLabelAlign.contact_name = response.data['contact_name'];
+            this.formLabelAlign.contact_name = response.data['contacts_name'];
             this.formLabelAlign.contact_department = response.data['contact_department'];
             this.formLabelAlign.job_title = response.data['job_title'];
             this.formLabelAlign.contact_email = response.data['contact_email'];
-            this.formLabelAlign.contact_phone = response.data['contact_phone'];
+            this.formLabelAlign.contacts_phone = response.data['contacts_phone'];
             this.formLabelAlign.invoice_email = response.data['invoice_email'];
           }
         }).catch(() => {

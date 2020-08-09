@@ -175,7 +175,7 @@
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
       // this.activeName='China（mainland）';
-      this.loading();
+     this.loading();
       setTimeout(() => {
         for(var k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
           console.log(this.scopeList[0].fieldworkCostArr);
@@ -401,25 +401,29 @@
         }else if(this.remarkActiveName == 2){
           this.remarkActiveName+=1;
         }else if(this.remarkActiveName >2){
-          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.scopeList[0].fieldworkCostArr.length=0;
-            this.areaContent();
-            this.$message({
-              type: 'success',
-              message: '切换成功！可以做一些其他的事情'
-            });
-            console.log(this.activeName);
-          }).catch(() => {
-            this.$message({
-              type: 'success',
-              message: '取消成功！可以做一些其他的事情'
-            });
-            throw new Error("取消成功！");
-          });
+          this.areaSubmit();
+          this.scopeList[0].fieldworkCostArr.length=0;
+          this.areaContent();
+
+          // return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //   this.scopeList[0].fieldworkCostArr.length=0;
+          //   this.areaContent();
+          //   this.$message({
+          //     type: 'success',
+          //     message: '切换成功！可以做一些其他的事情'
+          //   });
+          //   console.log(this.activeName);
+          // }).catch(() => {
+          //   this.$message({
+          //     type: 'success',
+          //     message: '取消成功！可以做一些其他的事情'
+          //   });
+          //   throw new Error("取消成功！");
+          // });
         }
       },
 
@@ -535,6 +539,21 @@
             // }
           }
 
+        }).catch(() => {
+          this.loading = false
+        });
+      },
+      areaSubmit(){
+        var met_id = this.$cookie.getCookie('methodology_id');
+        var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+        var jsonRes = JSON.stringify( this.scopeList[0] );
+        quantitativeFieldwork(met_id,this.activeName,jsonRes).then(response => {
+          if (response.code == '1'){
+            this.$message({
+              type: 'success',
+              message: 'Switch and save successfully'
+            });
+          }
         }).catch(() => {
           this.loading = false
         });

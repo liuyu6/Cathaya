@@ -123,6 +123,14 @@ export function deleteMethodology(met_id) {
   })
 }
 
+export function deleteMet(enquiry_id,methodology) {
+  return request({
+    url: '/DeleteMet',
+    method: 'get',
+    params: {enquiry_id,methodology}
+  })
+}
+
 // 查看报价单
 export function quotation(number) {
   return request({

@@ -375,38 +375,41 @@
         }else if(this.remarkActiveName == 2){
           this.remarkActiveName+=1;
         }else if(this.remarkActiveName >2){
-          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.loading();
-            this.scopeList.additionalServices=[];
+          this.areaSubmit();
+          this.loading();
+          this.scopeList.additionalServices=[];
 
-            this.scopeList.moderation_input='';
-            this.scopeList.facility_input='';
-            this.scopeList.audio_input='';
-            this.scopeList.video_input='';
-            this.scopeList.translationLocal_input='';
-            this.scopeList.transEnglish_input='';
-            this.scopeList.simultaneous_input='';
-            this.scopeList.additionalServicesTranslation='';
-            this.scopeList.additionalServicesOther='';
+          this.scopeList.moderation_input='';
+          this.scopeList.facility_input='';
+          this.scopeList.audio_input='';
+          this.scopeList.video_input='';
+          this.scopeList.translationLocal_input='';
+          this.scopeList.transEnglish_input='';
+          this.scopeList.simultaneous_input='';
+          this.scopeList.additionalServicesTranslation='';
+          this.scopeList.additionalServicesOther='';
 
-            this.scopeList.managementFee='';
-            this.scopeList.requirementsNotes='';
-            this.areaContent();
-            this.$message({
-              type: 'success',
-              message: '切换成功！可以做一些其他的事情'
-            });
-          }).catch(() => {
-            this.$message({
-              type: 'success',
-              message: '取消成功！可以做一些其他的事情'
-            });
-            throw new Error("取消成功！");
-          });
+          this.scopeList.managementFee='';
+          this.scopeList.requirementsNotes='';
+          this.areaContent();
+          // return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //
+          //
+          //   this.$message({
+          //     type: 'success',
+          //     message: '切换成功！可以做一些其他的事情'
+          //   });
+          // }).catch(() => {
+          //   this.$message({
+          //     type: 'success',
+          //     message: '取消成功！可以做一些其他的事情'
+          //   });
+          //   throw new Error("取消成功！");
+          // });
         }
 
       },
@@ -474,8 +477,6 @@
         var jsonRes = JSON.stringify( this.scopeList );
         console.log(jsonRes);
 
-
-
         createAdditional(met_id,this.activeName,jsonRes).then(response => {
           if (response.code == '1'){
             return this.$confirm('Save success!', '', {
@@ -502,6 +503,40 @@
             //     name: 'set-quantitative-additional',  // 路由的名称
             //   })
             // }
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+
+      },
+      areaSubmit(){
+        // console.log(this.scopeList);
+        var met_id = this.$cookie.getCookie('methodology_id');
+        var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+        // console.log(this.scopeList[0].fieldworkCostArr);
+
+        if(this.scopeList.additionalServices.includes('Design of screener')){
+          this.scopeList.designScreener_input =1;
+        }
+        if(this.scopeList.additionalServices.includes('Design of interview guide')){
+          this.scopeList.designGuide_input =1;
+        }
+        if(this.scopeList.additionalServices.includes('Topline report')){
+          this.scopeList.toplineReport =1;
+        }
+        if(this.scopeList.additionalServices.includes('Full report')){
+          this.scopeList.fullReport =1;
+        }
+
+        var jsonRes = JSON.stringify( this.scopeList );
+        console.log(jsonRes);
+
+        createAdditional(met_id,this.activeName,jsonRes).then(response => {
+          if (response.code == '1'){
+            // this.$message({
+            //   type: 'success',
+            //   message: 'Success'
+            // });
           }
         }).catch(() => {
           this.loading = false

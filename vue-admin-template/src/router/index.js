@@ -109,6 +109,7 @@ export const constantRoutes = [
       {
         path: 'add-sub-account',
         name: 'add-sub-account',
+        hidden:true,
         component: () => import('@/views/account/add-sub-account/index'),
         meta: { title: 'Add Sub Account' }
       },

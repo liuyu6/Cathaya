@@ -165,7 +165,7 @@
         this.$cookie.setCookie('methodology_id',row.met_id,'1');
         // this.$cookie.setCookie('project_methodologyType',row.type,'1');
         this.$router.push({
-          name: 'set-methodology',  // 路由的名称
+          name: 'set-project-market',  // 路由的名称
           query: {
           }
         })

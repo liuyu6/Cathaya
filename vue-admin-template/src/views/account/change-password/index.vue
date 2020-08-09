@@ -44,7 +44,7 @@
            </el-form-item>
 
            <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:10px;" @click.native.prevent="handlePass()">Submit</el-button>
-
+           <span><router-link :to="'/forgot-password' " style="color:#6A6A6A;text-align: center;display: block;font-size: 14px;">Forgot password？</router-link></span>
          </el-form>
 
        </el-col>
@@ -148,7 +148,10 @@
 
         })
 
-      }
+      },
+      forgotPwd(){
+
+      },
     }
   }
 </script>

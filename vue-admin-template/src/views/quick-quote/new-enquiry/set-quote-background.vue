@@ -112,6 +112,12 @@
           });
           return false;
         }else{
+          const loading = this.$loading({
+            lock: true,
+            text: 'Loading',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          });
           createEnquiry(number,content,project_name).then(response => {
             if (response.code == '1'){
 
@@ -127,6 +133,7 @@
           }).catch(() => {
             this.loading = false
           });
+          loading.close();
         }
 
       }

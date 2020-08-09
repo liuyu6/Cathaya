@@ -15,48 +15,48 @@
             <div class="fc-inline-left-title">APAC</div>
             <div class="apac-check">
               <el-checkbox label="China（mainland）" border ></el-checkbox>
-              <el-checkbox label="Taiwan" border></el-checkbox>
               <el-checkbox label="Hong Kong" border></el-checkbox>
-              <el-checkbox label="Macau" border></el-checkbox>
               <el-checkbox label="Japan" border></el-checkbox>
+              <el-checkbox label="Macau" border></el-checkbox>
+              <el-checkbox label="Taiwan" border></el-checkbox>
             </div>
             <div class="apac-check">
-              <el-checkbox label="South Korea" border></el-checkbox>
-              <el-checkbox label="Singapore" border></el-checkbox>
-              <el-checkbox label="Thailand" border></el-checkbox>
               <el-checkbox label="Malaysia" border></el-checkbox>
               <el-checkbox label="Philippines" border></el-checkbox>
+              <el-checkbox label="Singapore" border></el-checkbox>
+              <el-checkbox label="South Korea" border></el-checkbox>
+              <el-checkbox label="Thailand" border></el-checkbox>
             </div>
             <div class="apac-check">
+              <el-checkbox label="India" border></el-checkbox>
               <el-checkbox label="Indonesia" border></el-checkbox>
               <el-checkbox label="Vietnam" border></el-checkbox>
-              <el-checkbox label="India" border></el-checkbox>
-            </div>
-          </div>
-          <div class="na-box areaForm-item">
-            <div class="fc-inline-left-title">NA</div>
-            <div class="na-check">
-              <el-checkbox label="US" border ></el-checkbox>
-              <el-checkbox label="Canada" border></el-checkbox>
             </div>
           </div>
           <div class="eu-box areaForm-item">
             <div class="fc-inline-left-title">EU</div>
             <div class="eu-check">
-              <el-checkbox label="UK" border ></el-checkbox>
-              <el-checkbox label="Germany" border></el-checkbox>
               <el-checkbox label="France" border></el-checkbox>
+              <el-checkbox label="Germany" border></el-checkbox>
               <el-checkbox label="Italy" border></el-checkbox>
               <el-checkbox label="Spain" border></el-checkbox>
+              <el-checkbox label="UK" border ></el-checkbox>
             </div>
           </div>
           <div class="latam-box areaForm-item">
             <div class="fc-inline-left-title">LATAM</div>
             <div class="latam-check">
-              <el-checkbox label="Brazil" border ></el-checkbox>
-              <el-checkbox label="Mexico" border></el-checkbox>
-              <el-checkbox label="Columbia" border></el-checkbox>
               <el-checkbox label="Argentina" border></el-checkbox>
+              <el-checkbox label="Brazil" border ></el-checkbox>
+              <el-checkbox label="Columbia" border></el-checkbox>
+              <el-checkbox label="Mexico" border></el-checkbox>
+            </div>
+          </div>
+          <div class="na-box areaForm-item">
+            <div class="fc-inline-left-title">NA</div>
+            <div class="na-check">
+              <el-checkbox label="Canada" border></el-checkbox>
+              <el-checkbox label="US" border ></el-checkbox>
             </div>
           </div>
           <div class=" areaForm-item">
@@ -134,6 +134,12 @@
           });
           return false;
         }else{
+          const loading = this.$loading({
+            lock: true,
+            text: 'Loading',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          });
           // 页面初始化
           projectInformation(projectNumber).then(response => {
             if(response.code == '1'){
@@ -151,6 +157,7 @@
           }).catch(() => {
             this.loading = false
           });
+          loading.close();
         }
       },
       handleothersArea(value){

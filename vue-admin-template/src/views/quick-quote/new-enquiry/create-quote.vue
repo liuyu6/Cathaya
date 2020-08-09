@@ -22,22 +22,22 @@
         <el-table-column
           sortable
           label="PO#"
-          min-width="100px"
+          min-width="70px"
         >
           <template slot-scope="scope">
             {{ scope.row.number }}
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="project_name"
-          label="Project Name"
-        >
-        </el-table-column>
+<!--        <el-table-column-->
+<!--          prop="project_name"-->
+<!--          label="Project Name"-->
+<!--        >-->
+<!--        </el-table-column>-->
 
         <el-table-column
           prop="type"
-          label="Methodology"
+          label="Methodology Type"
         >
           <template slot-scope="scope">
             <el-tag v-if="scope.row.type == '1' ">Qualitative</el-tag>
@@ -45,41 +45,53 @@
           </template>
         </el-table-column>
 
+
+        <el-table-column
+          prop=""
+          label="Methodology"
+          min-width="120px"
+        >
+<!--            <el-button-->
+<!--              @click.native.prevent="addOtherMethodologyBtn(scope.$index, scope.row)"-->
+<!--              type="primary"-->
+<!--              icon="el-icon-circle-plus-outline"-->
+<!--              size="small">-->
+<!--               Add-->
+<!--            </el-button>-->
+          <template slot-scope="scope">
+            <el-tag
+              :key="tag"
+              v-for="tag in scope.row.methodology"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(scope.$index, scope.row,tag)">
+              {{ tag }}
+            </el-tag>
+            <el-button  class="button-new-tag" size="small" @click="addOtherMethodologyBtn(scope.$index, scope.row)">+ New</el-button>
+
+          </template>
+
+
+        </el-table-column>
+
         <el-table-column
           prop="create_time"
           sortable
           min-width="100px"
-          label="Date Of Formation">
-        </el-table-column>
-
-        <el-table-column
-          prop=""
-          label="Add other methodology"
-          min-width="120px"
-        >
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="addOtherMethodologyBtn(scope.$index, scope.row)"
-              type="primary"
-              icon="el-icon-circle-plus-outline"
-              size="small">
-               Add
-            </el-button>
-
-          </template>
+          label="Date">
         </el-table-column>
 
         <el-table-column
           prop=""
           label="Action"
-          min-width="170px"
+          min-width="190px"
           style="text-align: center;"
         >
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="editQuota(scope.$index, scope.row)"
               size="small">
-              Edit
+              Preview
             </el-button>
 
             <el-button
@@ -98,8 +110,6 @@
 
           </template>
         </el-table-column>
-
-
 
       </el-table>
       <el-pagination
@@ -160,6 +170,7 @@
   import { delEnquiry } from '@/api/quota'
   import { addEnquiry } from '@/api/quota'
   import { projectInformation } from '@/api/quota'
+  import { deleteMet } from '@/api/quota'
 
   import { getMeth } from '@/api/quota'
   import { ration } from '@/api/quota'
@@ -224,6 +235,7 @@
       tableStart(){
         quotaList(this.user_id).then(response => {
           if (response.code == '1'){
+            console.log(response.data);
             this.tableDataBegin=[];
             this.tableDataEnd=[];
             this.tableDataBegin=response.data;
@@ -344,6 +356,28 @@
           }
         })
       },
+      handleClose(index,row,tag){
+          console.log(index);
+          console.log(row);
+          console.log(tag);
+        var msg = "Are you sure to delete"+' "'+ tag +'"';
+        return this.$confirm(msg, '', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          deleteMet(row.id,tag).then(response => {
+            if(response.code == '1'){
+              this.tableStart();
+              this.$message({
+                type: 'success',
+                message: 'Successfully Delete!'
+              });
+            }
+          })
+        }).catch(() => {
+        })
+      },
 
       // 修改Methodology内容
       editQuota(index,row){
@@ -383,7 +417,7 @@
         }else{
           this.$cookie.setCookie('methodology_id',this.edit_methodologyVal,'1');
           this.$router.push({
-            name: 'set-methodology',  // 路由的名称
+            name: 'quota-preview',  // 路由的名称
             query: {
             }
           })
@@ -501,6 +535,16 @@
   }
   body .el-table colgroup.gutter {
     display: table-cell !important;
+  }
+  .button-new-tag {
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .el-tag{
+    margin-bottom: 8px;
+    margin-right: 8px;
   }
 
 

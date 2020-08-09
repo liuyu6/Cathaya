@@ -466,6 +466,7 @@
     },
     created(){
       this.init();
+      this.loading();
       this.areaContent();
     },
 
@@ -771,25 +772,27 @@
         }else if(this.remarkActiveName == 2){
           this.remarkActiveName+=1;
         }else if(this.remarkActiveName >2){
-          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.fieldList.length=0;
-            this.areaContent();
-            this.$message({
-              type: 'success',
-              message: '切换成功！'
-            });
-            console.log(this.activeName);
-          }).catch(() => {
-            this.$message({
-              type: 'success',
-              message: '取消成功！'
-            });
-            throw new Error("取消成功！");
-          });
+           this.loading();
+          this.fieldList.length=0;
+          this.areaContent();
+          // return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //
+          //   this.$message({
+          //     type: 'success',
+          //     message: '切换成功！'
+          //   });
+          //   console.log(this.activeName);
+          // }).catch(() => {
+          //   this.$message({
+          //     type: 'success',
+          //     message: '取消成功！'
+          //   });
+          //   throw new Error("取消成功！");
+          // });
         }
       },
       beforeLeaveTab2(){
@@ -806,56 +809,56 @@
         }else if(this.remarkActiveName2 == 2){
           this.remarkActiveName2+=1;
         }else if(this.remarkActiveName2 >2){
-          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            // this.scopeList={};
-            var pm = this.$cookie.getCookie('project_methodologyType');
-            if(pm == '1'){
-              this.scopeList.additionalServices=[];
-              this.scopeList.moderation_input='';
-              this.scopeList.facility_input='';
-              this.scopeList.audio_input='';
-              this.scopeList.video_input='';
-              this.scopeList.translationLocal_input='';
-              this.scopeList.transEnglish_input='';
-              this.scopeList.simultaneous_input='';
-              this.scopeList.additionalServicesTranslation='';
-              this.scopeList.additionalServicesOther='';
+          var pm = this.$cookie.getCookie('project_methodologyType');
+          if(pm == '1'){
+            this.scopeList.additionalServices=[];
+            this.scopeList.moderation_input='';
+            this.scopeList.facility_input='';
+            this.scopeList.audio_input='';
+            this.scopeList.video_input='';
+            this.scopeList.translationLocal_input='';
+            this.scopeList.transEnglish_input='';
+            this.scopeList.simultaneous_input='';
+            this.scopeList.additionalServicesTranslation='';
+            this.scopeList.additionalServicesOther='';
 
-              this.scopeList.managementFee='';
-              this.scopeList.requirementsNotes='';
-            }else if( pm == '2'){
-              this.scopeList.additionalServices=[];
-              this.scopeList.additionalServicesTranslation='';
-              this.scopeList.additionalServicesCross='';
-              this.scopeList.additionalServicesOther='';
-              this.scopeList.managementFee='';
-              this.scopeList.requirementsNotes='';
-            }
+            this.scopeList.managementFee='';
+            this.scopeList.requirementsNotes='';
+          }else if( pm == '2'){
+            this.scopeList.additionalServices=[];
+            this.scopeList.additionalServicesTranslation='';
+            this.scopeList.additionalServicesCross='';
+            this.scopeList.additionalServicesOther='';
+            this.scopeList.managementFee='';
+            this.scopeList.requirementsNotes='';
+          }
 
-
-            this.loading();
-            this.areaContent();
-            this.$message({
-              type: 'success',
-              message: '切换成功！'
-            });
-            console.log(this.activeName);
-          }).catch(() => {
-            this.$message({
-              type: 'success',
-              message: '取消成功！'
-            });
-            throw new Error("取消成功！");
-          });
+          this.loading();
+          this.areaContent();
+          // return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //   // this.scopeList={};
+          //
+          //   this.$message({
+          //     type: 'success',
+          //     message: '切换成功！'
+          //   });
+          //   console.log(this.activeName);
+          // }).catch(() => {
+          //   this.$message({
+          //     type: 'success',
+          //     message: '取消成功！'
+          //   });
+          //   throw new Error("取消成功！");
+          // });
         }
       },
       handleEdit(){
         this.$router.push({
-          name: 'set-methodology',  // 路由的名称
+          name: 'set-project-market',  // 路由的名称
           query: {
           }
         })

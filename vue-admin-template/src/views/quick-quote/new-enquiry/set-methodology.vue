@@ -199,6 +199,12 @@
           });
           return false;
         }else{
+          const loading = this.$loading({
+            lock: true,
+            text: 'Loading',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          });
           // 页面初始化
           projectInformation(projectNumber).then(response => {
             if(response.code == '1'){
@@ -230,6 +236,7 @@
           }).catch(() => {
             this.loading = false
           });
+          loading.close();
         }
       },
       changeMethodology(item) {

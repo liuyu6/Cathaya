@@ -318,30 +318,32 @@
         }else if(this.remarkActiveName == 2){
           this.remarkActiveName+=1;
         }else if(this.remarkActiveName >2){
-          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.loading();
-            this.scopeList[0].additionalServices=[];
-            this.scopeList[0].additionalServicesTranslation='';
-            this.scopeList[0].additionalServicesCross='';
-            this.scopeList[0].additionalServicesOther='';
-            this.scopeList[0].managementFee='';
-            this.scopeList[0].requirementsNotes='';
-            this.areaContent();
-            this.$message({
-              type: 'success',
-              message: '切换成功！可以做一些其他的事情'
-            });
-          }).catch(() => {
-            this.$message({
-              type: 'success',
-              message: '取消成功！可以做一些其他的事情'
-            });
-            throw new Error("取消成功！");
-          });
+          this.areaSubmit();
+          this.loading();
+          this.scopeList[0].additionalServices=[];
+          this.scopeList[0].additionalServicesTranslation='';
+          this.scopeList[0].additionalServicesCross='';
+          this.scopeList[0].additionalServicesOther='';
+          this.scopeList[0].managementFee='';
+          this.scopeList[0].requirementsNotes='';
+          this.areaContent();
+          // return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //
+          //   this.$message({
+          //     type: 'success',
+          //     message: '切换成功！可以做一些其他的事情'
+          //   });
+          // }).catch(() => {
+          //   this.$message({
+          //     type: 'success',
+          //     message: '取消成功！可以做一些其他的事情'
+          //   });
+          //   throw new Error("取消成功！");
+          // });
         }
 
       },
@@ -434,6 +436,49 @@
 
 
 
+      },
+      areaSubmit(){
+        // console.log(this.scopeList);
+        var met_id = this.$cookie.getCookie('methodology_id');
+        var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
+        // console.log(this.scopeList[0].fieldworkCostArr);
+
+        // designQuestionnaire_input:'',
+        //   programming_input:'',
+        //   dataSpss_input:'',
+        //   analysis_input:'',
+        //   topline_input:'',
+        //   fullReport_input:'',
+
+        if(this.scopeList[0].additionalServices.includes('Design of Questionnaire')){
+          this.scopeList[0].designQuestionnaire_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Programming & Hosting')){
+          this.scopeList[0].programming_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Data preparation / Data in Excel or SPSS')){
+          this.scopeList[0].dataSpss_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Advanced Analysis  (e.g. segmentation, conjoint analysis, MaxDiff, etc.)')){
+          this.scopeList[0].analysis_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Topline report')){
+          this.scopeList[0].topline_input =1;
+        }
+        if(this.scopeList[0].additionalServices.includes('Full report')){
+          this.scopeList[0].fullReport_input =1;
+        }
+
+        var jsonRes = JSON.stringify( this.scopeList[0] );
+        console.log(jsonRes);
+
+        quantitativeAdditional(met_id,this.activeName,jsonRes).then(response => {
+          if (response.code == '1'){
+
+          }
+        }).catch(() => {
+          this.loading = false
+        });
       },
       submit(){
         // console.log(this.scopeList);

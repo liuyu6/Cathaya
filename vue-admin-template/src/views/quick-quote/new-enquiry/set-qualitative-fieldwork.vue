@@ -47,7 +47,7 @@
                           </div>
 
 
-                          <div class="cost-box-s1">
+                          <div class="cost-box-s1" v-show="s1_item">
                             <div class="cost-box-item oneIR">
                               <span class="cost-box-item-title">Estimated IR / Recruiting Difficulty:</span>
                               <el-select v-model="v.one_IR" :key="v.i" placeholder="">
@@ -99,7 +99,7 @@
                             </div>
                           </div>
 
-                          <div class="cost-box-s2">
+                          <div class="cost-box-s2" v-show="s2_item">
                             <div class="cost-box-item groupIR">
                               <span class="cost-box-item-title">Estimated IR / Recruiting Difficulty:</span>
                               <el-select v-model="v.group_IR" :key="v.i" placeholder="">
@@ -207,6 +207,8 @@
         btn_remind:false,
         activeName:'',
         remarkActiveName:1,
+        s1_item:false,
+        s2_item:false,
         scopeList:[{
               fieldworkCost: '',
               fieldworkCostArr:[]
@@ -251,22 +253,29 @@
         stepTitles:['Project Overview','Methodology','Market','Fieldwork Services',' Additional Services','Review'],
       });
       // this.activeName='China（mainland）';
-      this.loading();
-      setTimeout(() => {
-        for(var k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
-          var res = this.scopeList[0].fieldworkCostArr[k].typeRespondents;
-          var mVal =  this.methodology;
+       this.loading();
+       setTimeout(() => {
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        for(let k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
+          let res = this.scopeList[0].fieldworkCostArr[k].typeRespondents;
+          let mVal =  this.methodology;
 
-          var scopeItem = $('.scope-content')[0];
-          var s1_item = $(scopeItem).find('.cost-box-s1')[k];
-          var s2_item = $(scopeItem).find('.cost-box-s2')[k];
+          let scopeItem = $('.scope-content')[0];
+          let s1_item = $(scopeItem).find('.cost-box-s1')[k];
+          let s2_item = $(scopeItem).find('.cost-box-s2')[k];
           console.log(mVal);
           console.log(res);
           console.log(k);
           // console.log(s2_item);
           if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
-            $(s1_item).css('display','block');
-            $(s2_item).css('display','none');
+            // this.s1_item = true;
+            this.$set(this,'s1_item',true)
+            this.$set(this,'s2_item',false);
             if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
               $(s1_item).find('.oneIR').css('display','block');
               $(s1_item).find('.oneTargetType').css('display','none');
@@ -277,8 +286,11 @@
           }
 
           if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
-            $(s1_item).css('display','none');
-            $(s2_item).css('display','block');
+
+              this.$set(this,'s1_item',false);
+              this.$set(this,'s2_item',true);
+              // $(s1_item).css('display','none');
+              // $(s2_item).css('display','block');
             if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
               $(s2_item).find('.groupIR').css('display','block');
               $(s2_item).find('.groupTargetType').css('display','none');
@@ -287,9 +299,10 @@
               $(s2_item).find('.groupTargetType').css('display','block');
             }
           }
-        }
-      }, 2500);
 
+        }
+        loading.close();
+      }, 2500);
 
     },
     methods:{
@@ -424,8 +437,10 @@
           console.log(k);
           // console.log(s2_item);
           if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
-            $(s1_item).css('display','block');
-            $(s2_item).css('display','none');
+            // $(s1_item).css('display','block');
+            // $(s2_item).css('display','none');
+            this.$set(this,'s1_item',true);
+            this.$set(this,'s2_item',false);
             if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
               $(s1_item).find('.oneIR').css('display','block');
               $(s1_item).find('.oneTargetType').css('display','none');
@@ -436,8 +451,10 @@
           }
 
           if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
-            $(s1_item).css('display','none');
-            $(s2_item).css('display','block');
+            // $(s1_item).css('display','none');
+            // $(s2_item).css('display','block');
+            this.$set(this,'s1_item',false);
+            this.$set(this,'s2_item',true);
             if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
               $(s2_item).find('.groupIR').css('display','block');
               $(s2_item).find('.groupTargetType').css('display','none');
@@ -472,6 +489,8 @@
         var presentRes = this.activeName;
         console.log(this.activeName);
         this.loading();
+        this.$set(this,'s2_item',false);
+        this.$set(this,'s1_item',false);
         setTimeout(() => {
           for(var k = 0;k<this.scopeList[0].fieldworkCostArr.length;k++){
             var res = this.scopeList[0].fieldworkCostArr[k].typeRespondents;
@@ -485,8 +504,11 @@
             console.log(k);
             // console.log(s2_item);
             if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
-              $(s1_item).css('display','block');
-              $(s2_item).css('display','none');
+              // $(s1_item).css('display','block');
+              // $(s2_item).css('display','none');
+              this.$set(this,'s2_item',false);
+              this.$set(this,'s1_item',true);
+
               if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
                 $(s1_item).find('.oneIR').css('display','block');
                 $(s1_item).find('.oneTargetType').css('display','none');
@@ -497,8 +519,11 @@
             }
 
             if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
-              $(s1_item).css('display','none');
-              $(s2_item).css('display','block');
+              // $(s1_item).css('display','none');
+              // $(s2_item).css('display','block');
+              this.$set(this,'s1_item',false);
+              this.$set(this,'s2_item',true);
+
               if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
                 $(s2_item).find('.groupIR').css('display','block');
                 $(s2_item).find('.groupTargetType').css('display','none');
@@ -508,9 +533,11 @@
               }
             }
           }
-        }, 2500);
+        }, 2000);
+
+
       },
-      beforeLeaveTab(){
+      beforeLeaveTab(tab, event){
 
         // if (this.areaScope.length == '1'){
         //   return  false;
@@ -524,25 +551,10 @@
         }else if(this.remarkActiveName == 2){
           this.remarkActiveName+=1;
         }else if(this.remarkActiveName >2){
-          return this.$confirm('此操作将切换tab页, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.scopeList[0].fieldworkCostArr.length=0;
-            this.areaContent();
-            this.$message({
-              type: 'success',
-              message: '切换成功！可以做一些其他的事情'
-            });
-            console.log(this.activeName);
-          }).catch(() => {
-            this.$message({
-              type: 'success',
-              message: '取消成功！可以做一些其他的事情'
-            });
-            throw new Error("取消成功！");
-          });
+          this.areaSubmit();
+          this.loading();
+          this.scopeList[0].fieldworkCostArr.length=0;
+          this.areaContent();
         }
       },
 
@@ -572,13 +584,16 @@
               group_targetType: '',
             }
           );
+
+          this.$set(this,'s1_item',false);
+          this.$set(this,'s2_item',false);
+
         }else{
           $(scopeBox).find('.add-cost-content').css('display','none');
           this.scopeList[index].fieldworkCostArr.length=0;
         }
 
       },
-
       changeTypeRespondents(item1,item2) {
         var index1 = this.scopeList.indexOf(item1);
         var index2 = this.scopeList[index1].fieldworkCostArr.indexOf(item2);
@@ -592,10 +607,12 @@
         var scopeItem = $('.scope-content')[index1];
         var s1_item = $(scopeItem).find('.cost-box-s1')[index2];
         var s2_item = $(scopeItem).find('.cost-box-s2')[index2];
-        // console.log(str);
+
         if (mVal == 'IDI' || mVal == "TDI" || mVal =="In home/context Ethnography"){
-          $(s1_item).css('display','block');
-          $(s2_item).css('display','none');
+          // $(s1_item).css('display','block');
+          // $(s2_item).css('display','none');
+          this.$set(this,'s1_item',true);
+          this.$set(this,'s2_item',false);
           if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
             $(s1_item).find('.oneIR').css('display','block');
             $(s1_item).find('.oneTargetType').css('display','none');
@@ -606,8 +623,10 @@
         }
 
         if (mVal == 'Dyad' || mVal == "Trio" || mVal=="Mini-Focus Group" || mVal =="Focus Group"){
-          $(s1_item).css('display','none');
-          $(s2_item).css('display','block');
+          // $(s1_item).css('display','none');
+          // $(s2_item).css('display','block');
+          this.$set(this,'s1_item',false);
+          this.$set(this,'s2_item',true);
           if (res == 'B2C (consumers)' || res == 'B2B (business decision makers or professionals)'){
             $(s2_item).find('.groupIR').css('display','block');
             $(s2_item).find('.groupTargetType').css('display','none');
@@ -648,40 +667,54 @@
         this.scopeList[index1].fieldworkCostArr.splice(index2);
       },
       submit(){
+        var met_id = this.$cookie.getCookie('methodology_id');
+        var jsonRes = JSON.stringify( this.scopeList[0] );
+        console.log(jsonRes);
+        console.log(this.activeName);
+        createFieldwork(met_id,this.activeName,jsonRes).then(response => {
+          if (response.code == '1'){
+            return this.$confirm('Save success!', '', {
+              confirmButtonText: 'Edit other markets',
+              cancelButtonText: 'Next',
+              type: 'success'
+            }).then(() => {
+
+              this.$message({
+                type: 'info',
+                message: 'Please choose another market'
+              });
+            }).catch(() => {
+              this.$router.push({
+                name: 'set-qualitative-additional',  // 路由的名称
+              })
+            });
+            // if(project_methodologyType == '1'){
+            //   this.$router.push({
+            //     name: 'set-qualitative-additional',  // 路由的名称
+            //   })
+            // }else if(project_methodologyType == '2'){
+            //   this.$router.push({
+            //     name: 'set-quantitative-additional',  // 路由的名称
+            //   })
+            // }
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+      },
+      areaSubmit(){
           // console.log(this.scopeList);
           var met_id = this.$cookie.getCookie('methodology_id');
-          var project_methodologyType = this.$cookie.getCookie('project_methodologyType');
-          // console.log(this.scopeList[0].fieldworkCostArr);
           var jsonRes = JSON.stringify( this.scopeList[0] );
           console.log(jsonRes);
           console.log(this.activeName);
 
         createFieldwork(met_id,this.activeName,jsonRes).then(response => {
             if (response.code == '1'){
-              return this.$confirm('Save success!', '', {
-                confirmButtonText: 'Edit other markets',
-                cancelButtonText: 'Next',
-                type: 'success'
-              }).then(() => {
-
-                this.$message({
-                  type: 'info',
-                  message: 'Please choose another market'
-                });
-              }).catch(() => {
-                this.$router.push({
-                      name: 'set-qualitative-additional',  // 路由的名称
-                })
-              });
-                // if(project_methodologyType == '1'){
-                //   this.$router.push({
-                //     name: 'set-qualitative-additional',  // 路由的名称
-                //   })
-                // }else if(project_methodologyType == '2'){
-                //   this.$router.push({
-                //     name: 'set-quantitative-additional',  // 路由的名称
-                //   })
-                // }
+              // this.$message({
+              //   type: 'success',
+              //   message: 'Switch and save successfully'
+              // });
             }
           }).catch(() => {
             this.loading = false
@@ -795,10 +828,10 @@
     text-align: right;
   }
   .cost-box-s1{
-    display: none;
+    /*display: none;*/
   }
   .cost-box-s2{
-    display: none;
+    /*display: none;*/
   }
   .add-cost-content{
     display: none;

@@ -31,10 +31,10 @@
                 min-width="100px"
                 label="Cost Items">
               </el-table-column>
-              <el-table-column
-                prop="cpi"
-                label="CPI">
-              </el-table-column>
+<!--              <el-table-column-->
+<!--                prop="cpi"-->
+<!--                label="CPI">-->
+<!--              </el-table-column>-->
               <el-table-column
                 prop="subtotal"
                 label="Subtotal">
