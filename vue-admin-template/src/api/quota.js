@@ -148,6 +148,24 @@ export function addInquiry(number) {
     params: {number}
   })
 }
+
+// 确认报价
+export function confirmQuotation(number) {
+  return request({
+    url: '/ConfirmQuotation',
+    method: 'get',
+    params: {number}
+  })
+}
+
+// 确认报价
+export function submitEnquiry(user_id) {
+  return request({
+    url: '/SubmitEnquiry',
+    method: 'get',
+    params: {user_id}
+  })
+}
 // export function getInfo(id) {
 //   return request({
 //     url: '/Basic',

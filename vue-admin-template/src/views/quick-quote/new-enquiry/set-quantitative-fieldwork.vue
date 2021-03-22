@@ -94,7 +94,7 @@
                           <div class="cost-box-item">
                             <span class="cost-box-item-title">Sample Size:</span>
                             <div style="width: 200px;display: inline-block;">
-                              <el-input v-model="v.sampleSize" :key="v.i" type="number"></el-input>
+                              <el-input v-model="v.sampleSize" :key="v.i" type="number" min="1"></el-input>
                             </div>
 
                           </div>

@@ -74,10 +74,21 @@
 
         </el-table-column>
 
+                <el-table-column
+                  prop="status"
+                  label="Status"
+                >
+                  <template slot-scope="scope">
+                    <el-tag v-if="scope.row.status == '1' ">Pending</el-tag>
+                    <el-tag v-if="scope.row.status == '2' ">New</el-tag>
+                  </template>
+                </el-table-column>
+
+
         <el-table-column
           prop="create_time"
           sortable
-          min-width="100px"
+          min-width="60px"
           label="Date">
         </el-table-column>
 
@@ -91,7 +102,7 @@
             <el-button
               @click.native.prevent="editQuota(scope.$index, scope.row)"
               size="small">
-              Preview
+              Edit
             </el-button>
 
             <el-button

@@ -69,6 +69,8 @@
   import { mapGetters } from 'vuex'
   import { projectInformation } from '@/api/quota'
   import { quotation } from '@/api/quota'
+  import { confirmQuotation } from '@/api/quota'
+
 
   export default {
     name: 'preliminary-quotation',
@@ -179,13 +181,32 @@
           }
         });
       },
-      getQuote(){},
+      getQuote(){
+        // cookie中没有项目编号进行跳转
+        var projectNumber = this.$cookie.getCookie('project_number');
+        confirmQuotation(projectNumber).then(response => {
+          if(response.code == '1'){
+            this.$alert('Quote submitted successfully !', '', {
+              confirmButtonText: 'confirm',
+              callback: action => {
+                this.$router.push({
+                  name: 'new-enquiry',  // 路由的名称
+                  query: {
+                  }
+                });
+              }
+            });
+          }
+        }).catch(() => {
+          this.loading = false
+        });
+      },
       arraySpanMethod({ row, column, rowIndex, columnIndex }) {
         // console.log(row)
         // console.log(rowIndex)
         // console.log(column)
         // console.log(columnIndex)
-         if (columnIndex === 0 || columnIndex === 5) {
+         if (columnIndex === 0 || columnIndex === 4) {
             if (rowIndex % 2 === 0) {
               return {
                 rowspan: 2,

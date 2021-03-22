@@ -26,5 +26,7 @@
     font-weight:500;
     line-height:28px;
     margin-bottom: 20px;
+    padding: 8px;
+    background-color: aliceblue;
   }
 </style>

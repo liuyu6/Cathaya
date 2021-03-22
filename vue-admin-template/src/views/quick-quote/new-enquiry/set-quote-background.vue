@@ -88,7 +88,13 @@
         }else{
           // 页面初始化
           projectInformation(projectNumber).then(response => {
+            console.log(response);
             if(response.code == '1'){
+              // if(response.data['steps']=='null'){
+              //   this.$router.push({
+              //     name: 'set-quote-background',  // 路由的名称
+              //   })
+              // }
               this.setBackgroundForm.project_name = response.data.project_name;
               this.setBackgroundForm.project_background = response.data.content;
             }
@@ -98,7 +104,7 @@
         }
       },
       saveProjectBackground(){
-        // 获取地址栏参数
+        // 获取项目编号
         var number = this.$cookie.getCookie('project_number');
         var project_name = this.setBackgroundForm.project_name;
         var content = this.setBackgroundForm.project_background;

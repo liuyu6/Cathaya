@@ -93,7 +93,7 @@
                             <div class="cost-box-item">
                               <span class="cost-box-item-title">Sample Size:</span>
                               <div style="width: 200px;display: inline-block;">
-                                <el-input v-model="v.one_sampleSize" :key="v.i" type="number"></el-input>
+                                <el-input v-model="v.one_sampleSize" :key="v.i" type="number" min="1"></el-input>
                               </div>
 
                             </div>
@@ -157,7 +157,7 @@
                               <span class="cost-box-item-title">Number of Groups in Total:</span>
                               <div style="width: 200px;display: inline-block;">
                                 <div style="width: 200px;display: inline-block;">
-                                  <el-input v-model="v.group_numberGroupsTotal" :key="v.i" placeholder="" type="number"></el-input>
+                                  <el-input v-model="v.group_numberGroupsTotal" :key="v.i" placeholder="" type="number" min='1'></el-input>
                                 </div>
                               </div>
                             </div>

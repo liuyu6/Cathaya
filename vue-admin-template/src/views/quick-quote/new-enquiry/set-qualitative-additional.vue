@@ -100,16 +100,17 @@
 
                             </el-checkbox-group>
                           </div>
-                          <div class="item-info-box">
-                            <div class="fc-title-left">Project setup and management fee :</div>
-                            <div class="fc-inline-left">
-                              <el-input
-                                type="text"
-                                placeholder=""
-                                style="width: 200px;"
-                                v-model="scopeList.managementFee">
-                              </el-input>
-                            </div>
+                          <div class="item-info-box" >
+                            <div class="fc-title-left" style="width: 100%;margin-bottom: 20px;">Project setup and management fee </div>
+
+<!--                            <div class="fc-inline-left">-->
+<!--                              <el-input-->
+<!--                                type="text"-->
+<!--                                placeholder=""-->
+<!--                                style="width: 200px;"-->
+<!--                                v-model="scopeList.managementFee">-->
+<!--                              </el-input>-->
+<!--                            </div>-->
                           </div>
                           <div class="item-info-box">
                             <div class="fc-title-left">Special Requirements / Notes (if any) :</div>

@@ -71,7 +71,7 @@
            </el-form>
         </el-col>
 
-        <el-col :xs="{span: 9, offset: 1}" :sm="{span: 8, offset: 2}">
+        <el-col :xs="{span: 9, offset: 1}" :sm="{span: 8, offset: 2}" v-show="affVal">
           <div class="input_box">
             <div class="input_title" style="margin-bottom: 20px;">Affiliated Sub-Account (If any) </div>
             <el-tag
@@ -291,7 +291,8 @@ export default {
         confirm_password: [{ required: true, trigger: 'blur', validator: validatePassword2 }]
       },
       addSubAccount:false,
-      viewSubAccount:false
+      viewSubAccount:false,
+      affVal:false
 
     }
   },
@@ -304,22 +305,31 @@ export default {
       'name'
     ])
   },
+  created:{
+
+  },
   mounted(){
     this.getInfo();
   },
   methods:{
     getInfo(){
       getInfo(this.user_id).then(response => {
-        console.log('11111');
+        console.log('111111111111111111111111');
         console.log(response);
+
         if (response.code == '1'){
+          // console.log(response.data.type);
+          if(response.data['type'] == '1'){
+            this.affVal=true;
+          }else{
+            this.affVal=false;
+          }
           this.formLabelAlign.id = this.user_id;
           this.formLabelAlign.user_email = this.name;
           this.formLabelAlign.company_name = response.data['company_name'];
           this.formLabelAlign.job = response.data['job'];
           this.formLabelAlign.office_address = response.data['office_address'];
           this.formLabelAlign.contact_phone = response.data['contact_phone'];
-
 
         }
       }).catch(() => {
